@@ -485,13 +485,22 @@ section { padding: 100px 20px; }
     font-size: 0.78rem;
     color: var(--text-light);
 }
-.property-footer a {
-    color: var(--navy);
+.property-inquiry-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--navy), var(--sky));
+    color: #fff !important;
     font-weight: 700;
+    font-size: 0.78rem;
     text-decoration: none;
-    transition: color 0.2s;
+    padding: 8px 20px;
+    border-radius: var(--radius-btn);
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,91,172,0.2);
 }
-.property-footer a:hover { color: var(--sky); }
+.property-inquiry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,91,172,0.3);
+}
 
 .property-cta { text-align: center; }
 .property-cta p { margin-bottom: 20px; color: var(--text-light); font-size: 0.9rem; }

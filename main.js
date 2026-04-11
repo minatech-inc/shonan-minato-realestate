@@ -109,6 +109,10 @@ function createPropertyCard(p) {
     var reason = escapeHtml(p['判断根拠'] || '');
     var url = p['物件URL'] || '#contact';
 
+    // 問い合わせフォームへの誘導URL（物件名を自動セット）
+    var contactUrl = '#contact';
+    var encodedName = encodeURIComponent(name.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'));
+
     card.innerHTML =
         '<div class="property-header">' +
             '<span class="property-rank ' + rankClass + '">' + rankLabel + '評価 (スコア: ' + score + '/10)</span>' +
@@ -124,8 +128,20 @@ function createPropertyCard(p) {
         '</div>' +
         '<div class="property-footer">' +
             '<span>' + reason + '</span>' +
-            '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" style="color:var(--primary-light);font-weight:700;text-decoration:none;">詳細を見る</a>' +
+            '<a href="' + contactUrl + '" class="property-inquiry-btn" data-property="' + escapeHtml(name) + ' / ' + price + '万円 / ' + location + '">この物件について相談する</a>' +
         '</div>';
+
+    // クリック時にフォームの相談内容に物件情報を自動入力
+    var inquiryBtn = card.querySelector('.property-inquiry-btn');
+    if (inquiryBtn) {
+        inquiryBtn.addEventListener('click', function(e) {
+            var propInfo = this.getAttribute('data-property');
+            var textarea = document.getElementById('message');
+            if (textarea) {
+                textarea.value = '【物件のお問い合わせ】\n' + propInfo + '\n\nこちらの物件について詳細を教えてください。';
+            }
+        });
+    }
 
     return card;
 }
