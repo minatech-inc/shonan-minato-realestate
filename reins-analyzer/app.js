@@ -11,10 +11,113 @@
 
     // ======== 初期化 ========
     document.addEventListener('DOMContentLoaded', function() {
+        initLicense();
         initTabs();
         initButtons();
         initDragDrop();
     });
+
+    // ======== ライセンス認証 ========
+    function initLicense() {
+        var modal = document.getElementById('license-modal');
+        var keyInput = document.getElementById('license-key-input');
+        var activateBtn = document.getElementById('btn-license-activate');
+        var errorEl = document.getElementById('license-error');
+        var statusEl = document.getElementById('license-status');
+        var changeLicBtn = document.getElementById('btn-change-license');
+
+        // 保存済みライセンスチェック
+        var saved = LicenseManager.loadLicense();
+        if (saved && saved.valid) {
+            modal.classList.add('hidden');
+            showLicenseStatus(saved);
+            updateExportButtons(saved);
+        } else {
+            // 保存済みだが期限切れの場合
+            if (saved && !saved.valid) {
+                keyInput.value = LicenseManager.getSavedKey();
+                errorEl.textContent = saved.message;
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // 認証ボタン
+        activateBtn.addEventListener('click', function() {
+            var key = keyInput.value.trim();
+            if (!key) {
+                errorEl.textContent = 'ライセンスキーを入力してください';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            var result = LicenseManager.saveLicense(key);
+            if (result.valid) {
+                modal.classList.add('hidden');
+                showLicenseStatus(result);
+                updateExportButtons(result);
+                showToast(result.planName + 'プランで認証されました', 'success');
+            } else {
+                errorEl.textContent = result.message;
+                errorEl.style.display = 'block';
+            }
+        });
+
+        // Enterキー対応
+        keyInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') activateBtn.click();
+        });
+
+        // ライセンス変更ボタン
+        if (changeLicBtn) {
+            changeLicBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                keyInput.value = LicenseManager.getSavedKey();
+                errorEl.style.display = 'none';
+                modal.classList.remove('hidden');
+            });
+        }
+    }
+
+    function showLicenseStatus(licenseInfo) {
+        var el = document.getElementById('license-status');
+        if (!el) return;
+        if (licenseInfo.daysLeft <= 30) {
+            el.className = 'license-status expiring';
+            el.textContent = licenseInfo.planName + ' (残り' + licenseInfo.daysLeft + '日)';
+        } else {
+            el.className = 'license-status active';
+            el.textContent = licenseInfo.planName + ' (' + licenseInfo.expiryStr + 'まで)';
+        }
+    }
+
+    function updateExportButtons(licenseInfo) {
+        var csvBtn = document.getElementById('btn-export-csv');
+        var excelBtn = document.getElementById('btn-export-excel');
+        var jsonBtn = document.getElementById('btn-export-json');
+
+        if (!licenseInfo || !licenseInfo.valid) {
+            if (csvBtn) { csvBtn.classList.add('disabled'); csvBtn.classList.add('btn-locked'); }
+            if (excelBtn) { excelBtn.classList.add('disabled'); excelBtn.classList.add('btn-locked'); }
+            if (jsonBtn) { jsonBtn.classList.add('disabled'); jsonBtn.classList.add('btn-locked'); }
+            return;
+        }
+
+        // CSV: 全プランOK
+        if (csvBtn) { csvBtn.classList.remove('disabled'); csvBtn.classList.remove('btn-locked'); }
+
+        // Excel/JSON: STD/PROのみ
+        if (licenseInfo.features.excelExport) {
+            if (excelBtn) { excelBtn.classList.remove('disabled'); excelBtn.classList.remove('btn-locked'); }
+        } else {
+            if (excelBtn) { excelBtn.classList.add('disabled'); excelBtn.classList.add('btn-locked'); }
+        }
+
+        if (licenseInfo.features.jsonExport) {
+            if (jsonBtn) { jsonBtn.classList.remove('disabled'); jsonBtn.classList.remove('btn-locked'); }
+        } else {
+            if (jsonBtn) { jsonBtn.classList.add('disabled'); jsonBtn.classList.add('btn-locked'); }
+        }
+    }
 
     // ======== タブ切り替え ========
     function initTabs() {
@@ -273,6 +376,10 @@
 
     // ======== CSV エクスポート ========
     function exportCSV() {
+        if (!LicenseManager.canExportCSV()) {
+            showToast('CSV出力にはライセンスが必要です', 'warning');
+            return;
+        }
         if (analyzedProperties.length === 0) {
             showToast('エクスポートするデータがありません', 'warning');
             return;
@@ -300,6 +407,10 @@
 
     // ======== Excel エクスポート（HTML Table形式 .xls） ========
     function exportExcel() {
+        if (!LicenseManager.canExportExcel()) {
+            showToast('Excel出力はスタンダード以上のプランが必要です', 'warning');
+            return;
+        }
         if (analyzedProperties.length === 0) {
             showToast('エクスポートするデータがありません', 'warning');
             return;
@@ -337,6 +448,10 @@
 
     // ======== JSON エクスポート ========
     function exportJSON() {
+        if (!LicenseManager.canExportJSON()) {
+            showToast('JSON出力はスタンダード以上のプランが必要です', 'warning');
+            return;
+        }
         if (analyzedProperties.length === 0) {
             showToast('エクスポートするデータがありません', 'warning');
             return;

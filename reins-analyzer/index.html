@@ -3,21 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REINS物件解析ツール | MinaTech</title>
+    <title>REINS Analyzer | MinaTech - 宅建業者向け物件評価ツール</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ライセンス認証モーダル -->
+    <div id="license-modal" class="license-modal">
+        <div class="license-modal-content">
+            <div class="license-modal-header">
+                <img src="logo.svg" alt="REINS Analyzer" height="48" style="height:48px;">
+            </div>
+            <h2>ライセンス認証</h2>
+            <p class="license-modal-desc">本ツールの利用にはライセンスキーが必要です。<br>キーをお持ちでない方は MinaTech までお問い合わせください。</p>
+            <div class="license-input-wrap">
+                <input type="text" id="license-key-input" placeholder="RA-STD-XXXXXXXX-XXXX-XXXXXXXX" autocomplete="off" spellcheck="false">
+                <button id="btn-license-activate" class="btn btn-primary">認証する</button>
+            </div>
+            <div id="license-error" class="license-error" style="display:none;"></div>
+            <div class="license-modal-footer">
+                <a href="terms.html">利用規約</a>
+                <span>|</span>
+                <a href="mailto:isoya.h@minatech1210.com">お問い合わせ</a>
+            </div>
+        </div>
+    </div>
+
     <!-- ヘッダー -->
     <header class="header">
         <div class="header-inner">
             <div class="logo">
-                <span class="logo-icon">R</span>
-                <div class="logo-text">
-                    <strong>REINS物件解析ツール</strong>
-                    <small>コピー&ペーストで即座に物件評価</small>
-                </div>
+                <img src="logo.svg" alt="REINS Analyzer" height="40" style="height:40px;">
             </div>
-            <div class="header-badge">宅建業者専用</div>
+            <div class="header-right">
+                <div id="license-status" class="license-status"></div>
+                <div class="header-badge">宅建業者専用</div>
+            </div>
         </div>
     </header>
 
@@ -201,15 +221,23 @@
     <!-- フッター -->
     <footer class="footer">
         <div class="footer-inner">
+            <div class="footer-links">
+                <a href="terms.html">利用規約</a>
+                <span>|</span>
+                <a href="mailto:isoya.h@minatech1210.com">お問い合わせ</a>
+                <span>|</span>
+                <a href="#" id="btn-change-license">ライセンス変更</a>
+            </div>
             <p class="footer-legal">
                 本ツールはレインズの自動アクセス・スクレイピングを一切行いません。<br>
                 ユーザーが手動でコピーしたテキストをローカルで解析するのみです。<br>
                 データは外部サーバーに送信されません（全処理がブラウザ内で完結）。
             </p>
-            <p class="footer-copy">&copy; MinaTech株式会社</p>
+            <p class="footer-copy">&copy; MinaTech株式会社 All Rights Reserved.</p>
         </div>
     </footer>
 
+    <script src="license.js"></script>
     <script src="parser.js"></script>
     <script src="scorer.js"></script>
     <script src="app.js"></script>
