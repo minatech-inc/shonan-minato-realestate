@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REINS物件解析ツール | MinaTech</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">R</span>
+                <div class="logo-text">
+                    <strong>REINS物件解析ツール</strong>
+                    <small>コピー&ペーストで即座に物件評価</small>
+                </div>
+            </div>
+            <div class="header-badge">宅建業者専用</div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main">
+        <!-- ステップ案内 -->
+        <section class="steps">
+            <div class="step">
+                <span class="step-num">1</span>
+                <span class="step-text">レインズで物件を検索</span>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step">
+                <span class="step-num">2</span>
+                <span class="step-text">物件詳細をコピー</span>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step">
+                <span class="step-num">3</span>
+                <span class="step-text">ここに貼り付け</span>
+            </div>
+            <div class="step-arrow">&rarr;</div>
+            <div class="step">
+                <span class="step-num">4</span>
+                <span class="step-text">自動評価＆エクスポート</span>
+            </div>
+        </section>
+
+        <!-- 入力エリア -->
+        <section class="input-section">
+            <div class="input-header">
+                <h2>物件データ入力</h2>
+                <div class="input-actions">
+                    <button id="btn-sample" class="btn btn-outline" title="サンプルデータで試す">サンプルで試す</button>
+                    <button id="btn-clear" class="btn btn-outline-danger">クリア</button>
+                </div>
+            </div>
+            <div class="input-tabs">
+                <button class="tab active" data-tab="paste">テキスト貼り付け</button>
+                <button class="tab" data-tab="manual">手動入力</button>
+            </div>
+
+            <!-- テキスト貼り付けタブ -->
+            <div id="tab-paste" class="tab-content active">
+                <textarea id="paste-area" placeholder="レインズの物件詳細ページのテキストをコピーして、ここに貼り付けてください。&#10;&#10;【対応フォーマット】&#10;・物件詳細ページ全体のコピー&#10;・複数物件の連続貼り付け（区切り線で自動分割）&#10;・タブ区切りの一覧コピー&#10;&#10;Ctrl+V で貼り付け"></textarea>
+                <button id="btn-parse" class="btn btn-primary btn-lg">解析する</button>
+            </div>
+
+            <!-- 手動入力タブ -->
+            <div id="tab-manual" class="tab-content">
+                <form id="manual-form" class="manual-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>物件名・案件名</label>
+                            <input type="text" name="物件名" placeholder="例: 藤沢市南藤沢 一棟マンション">
+                        </div>
+                        <div class="form-group">
+                            <label>所在地</label>
+                            <input type="text" name="所在地" placeholder="例: 神奈川県藤沢市南藤沢3-12">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>価格（万円）</label>
+                            <input type="number" name="価格(万円)" placeholder="例: 3500">
+                        </div>
+                        <div class="form-group">
+                            <label>表面利回り（%）</label>
+                            <input type="number" name="表面利回り(%)" step="0.01" placeholder="例: 12.5">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>最寄駅・徒歩（分）</label>
+                            <input type="text" name="駅徒歩(分)" placeholder="例: JR藤沢駅 徒歩5分">
+                        </div>
+                        <div class="form-group">
+                            <label>面積（㎡）</label>
+                            <input type="text" name="面積(㎡)" placeholder="例: 250.5">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>構造</label>
+                            <input type="text" name="構造" placeholder="例: RC造 3階建">
+                        </div>
+                        <div class="form-group">
+                            <label>築年月</label>
+                            <input type="text" name="築年月" placeholder="例: 1995年3月">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>土地面積（㎡）</label>
+                            <input type="text" name="土地面積(㎡)" placeholder="例: 180.2">
+                        </div>
+                        <div class="form-group">
+                            <label>建物面積（㎡）</label>
+                            <input type="text" name="建物面積(㎡)" placeholder="例: 320.8">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>現況（空室/賃貸中）</label>
+                            <input type="text" name="現況" placeholder="例: 賃貸中（満室）">
+                        </div>
+                        <div class="form-group">
+                            <label>備考</label>
+                            <input type="text" name="備考" placeholder="自由記入">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">この物件を追加</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 解析結果 -->
+        <section id="results-section" class="results-section" style="display:none;">
+            <div class="results-header">
+                <h2>解析結果 <span id="result-count"></span></h2>
+                <div class="results-actions">
+                    <button id="btn-export-csv" class="btn btn-outline">CSV出力</button>
+                    <button id="btn-export-excel" class="btn btn-outline">Excel出力</button>
+                    <button id="btn-export-json" class="btn btn-outline">JSON出力</button>
+                </div>
+            </div>
+
+            <!-- サマリーカード -->
+            <div class="summary-cards">
+                <div class="summary-card s-rank">
+                    <div class="summary-rank">S</div>
+                    <div class="summary-label">即日対応</div>
+                    <div class="summary-count" id="count-s">0</div>
+                </div>
+                <div class="summary-card a-rank">
+                    <div class="summary-rank">A</div>
+                    <div class="summary-label">今週対応</div>
+                    <div class="summary-count" id="count-a">0</div>
+                </div>
+                <div class="summary-card b-rank">
+                    <div class="summary-rank">B</div>
+                    <div class="summary-label">今月検討</div>
+                    <div class="summary-count" id="count-b">0</div>
+                </div>
+                <div class="summary-card c-rank">
+                    <div class="summary-rank">C</div>
+                    <div class="summary-label">見送り</div>
+                    <div class="summary-count" id="count-c">0</div>
+                </div>
+            </div>
+
+            <!-- 物件カード一覧 -->
+            <div id="property-cards" class="property-cards"></div>
+
+            <!-- テーブル表示 -->
+            <div class="table-toggle">
+                <button id="btn-table-view" class="btn btn-outline btn-sm">テーブル表示に切り替え</button>
+            </div>
+            <div id="table-container" class="table-container" style="display:none;">
+                <table id="results-table">
+                    <thead>
+                        <tr>
+                            <th>評価</th>
+                            <th>スコア</th>
+                            <th>物件名</th>
+                            <th>所在地</th>
+                            <th>価格(万円)</th>
+                            <th>利回り(%)</th>
+                            <th>駅徒歩</th>
+                            <th>構造</th>
+                            <th>面積</th>
+                            <th>判断根拠</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p class="footer-legal">
+                本ツールはレインズの自動アクセス・スクレイピングを一切行いません。<br>
+                ユーザーが手動でコピーしたテキストをローカルで解析するのみです。<br>
+                データは外部サーバーに送信されません（全処理がブラウザ内で完結）。
+            </p>
+            <p class="footer-copy">&copy; MinaTech株式会社</p>
+        </div>
+    </footer>
+
+    <script src="parser.js"></script>
+    <script src="scorer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
