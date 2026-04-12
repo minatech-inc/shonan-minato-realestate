@@ -17,7 +17,12 @@
         email: 'isoya.h@minatech1210.com',
         address: '〒251-0055 神奈川県藤沢市南藤沢3-12 クリオ藤沢駅前 7階',
         license: '宅地建物取引業：神奈川県知事（1）第32624号',
-        ceo: '代表取締役 磯谷 肇'
+        ceo: '代表取締役 磯谷 肇',
+        line: {
+            id: '@760zrvim',
+            addUrl: 'https://lin.ee/SnaIIqa',
+            qr: 'https://qr-official.line.me/gs/M_760zrvim_BW.png'
+        }
     };
 
     // ============================================
@@ -95,6 +100,7 @@
                         <ul class="footer-nav">
                             <li><a href="tel:${SITE.tel}">${SITE.tel}</a></li>
                             <li><a href="mailto:${SITE.email}">${SITE.email}</a></li>
+                            <li><a href="${SITE.line.addUrl}" target="_blank" rel="noopener">LINE公式 ${SITE.line.id}</a></li>
                             <li style="color: var(--gray-500); font-size: 0.75rem;">年中無休 10:00〜21:00</li>
                         </ul>
                     </div>
