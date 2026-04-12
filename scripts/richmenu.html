@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;600&family=Cormorant+Garamond:wght@400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 2500px; height: 1686px; overflow: hidden; }
+  body {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 8px;
+    background: #0a2540;
+    font-family: 'Noto Serif JP', serif;
+  }
+  .cell {
+    background: #14375a;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    border-top: 6px solid #c9a96e;
+  }
+  .cell::after {
+    content: '';
+    position: absolute;
+    bottom: 80px;
+    width: 120px;
+    height: 4px;
+    background: #c9a96e;
+  }
+  .brand-mark {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    width: 110px;
+    height: 110px;
+    opacity: 0.42;
+  }
+  .brand-mark path {
+    stroke: #c9a96e;
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: square;
+    stroke-miterlimit: 10;
+  }
+  .icon {
+    width: 260px;
+    height: 260px;
+    margin-bottom: 60px;
+    stroke: #dbc291;
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .jp {
+    font-size: 92px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+  .en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    color: #c9a96e;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+  }
+  .brand-band {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: #0a2540;
+    padding: 18px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 10;
+    border-bottom: 2px solid #c9a96e;
+  }
+  .brand-band svg { height: 60px; }
+  .brand-band .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    color: #f6f3ec;
+    letter-spacing: 6px;
+  }
+</style>
+</head>
+<body>
+  <!-- no brand band, richmenu guidelines prefer clean 6-cell -->
+  <div class="cell"><svg class="brand-mark" viewBox="0 0 77.4 77.4"><path d="M2 38.7h36.7v36.7m-7.8 0V46.5H2m20.9 28.9v-21H2m13.2 7.7H2v13.2h13.2V62.1zm23.5 13.3h36.7V38.7M38.7 67.5h28.9V38.7M38.7 59.6h20.9V38.7m-7.7 13.2V38.7H38.7v13.2h13.2zM38.7 2v36.7h36.7M46.5 2v28.9h28.9M54.4 2v20.9h20.9m-13.2-7.7h13.2V2H62.1v13.2zM38.7 2H2v36.7M38.7 9.8H9.8v28.9m28.9-21h-21v20.9m7.7-13.2v13.2h13.2V25.4H25.4z"/></svg>
+    <svg class="icon" viewBox="0 0 100 100">
+      <path d="M10 50 L50 15 L90 50 M20 50 L20 85 L80 85 L80 50 M42 85 L42 60 L58 60 L58 85"/>
+    </svg>
+    <div class="jp">物件検索</div>
+    <div class="en">Properties</div>
+  </div>
+  <div class="cell"><svg class="brand-mark" viewBox="0 0 77.4 77.4"><path d="M2 38.7h36.7v36.7m-7.8 0V46.5H2m20.9 28.9v-21H2m13.2 7.7H2v13.2h13.2V62.1zm23.5 13.3h36.7V38.7M38.7 67.5h28.9V38.7M38.7 59.6h20.9V38.7m-7.7 13.2V38.7H38.7v13.2h13.2zM38.7 2v36.7h36.7M46.5 2v28.9h28.9M54.4 2v20.9h20.9m-13.2-7.7h13.2V2H62.1v13.2zM38.7 2H2v36.7M38.7 9.8H9.8v28.9m28.9-21h-21v20.9m7.7-13.2v13.2h13.2V25.4H25.4z"/></svg>
+    <svg class="icon" viewBox="0 0 100 100">
+      <path d="M15 85 L15 60 M35 85 L35 45 M55 85 L55 30 M75 85 L75 15 M10 85 L90 85 M10 35 L30 50 L50 25 L70 40 L90 15"/>
+    </svg>
+    <div class="jp">投資物件</div>
+    <div class="en">Investment</div>
+  </div>
+  <div class="cell"><svg class="brand-mark" viewBox="0 0 77.4 77.4"><path d="M2 38.7h36.7v36.7m-7.8 0V46.5H2m20.9 28.9v-21H2m13.2 7.7H2v13.2h13.2V62.1zm23.5 13.3h36.7V38.7M38.7 67.5h28.9V38.7M38.7 59.6h20.9V38.7m-7.7 13.2V38.7H38.7v13.2h13.2zM38.7 2v36.7h36.7M46.5 2v28.9h28.9M54.4 2v20.9h20.9m-13.2-7.7h13.2V2H62.1v13.2zM38.7 2H2v36.7M38.7 9.8H9.8v28.9m28.9-21h-21v20.9m7.7-13.2v13.2h13.2V25.4H25.4z"/></svg>
+    <svg class="icon" viewBox="0 0 100 100">
+      <path d="M50 10 L61 38 L90 40 L68 60 L75 88 L50 73 L25 88 L32 60 L10 40 L39 38 Z"/>
+    </svg>
+    <div class="jp">富裕層物件</div>
+    <div class="en">Luxury</div>
+  </div>
+  <div class="cell"><svg class="brand-mark" viewBox="0 0 77.4 77.4"><path d="M2 38.7h36.7v36.7m-7.8 0V46.5H2m20.9 28.9v-21H2m13.2 7.7H2v13.2h13.2V62.1zm23.5 13.3h36.7V38.7M38.7 67.5h28.9V38.7M38.7 59.6h20.9V38.7m-7.7 13.2V38.7H38.7v13.2h13.2zM38.7 2v36.7h36.7M46.5 2v28.9h28.9M54.4 2v20.9h20.9m-13.2-7.7h13.2V2H62.1v13.2zM38.7 2H2v36.7M38.7 9.8H9.8v28.9m28.9-21h-21v20.9m7.7-13.2v13.2h13.2V25.4H25.4z"/></svg>
+    <svg class="icon" viewBox="0 0 100 100">
+      <path d="M25 10 L75 10 L75 90 L25 90 Z M35 28 L65 28 M35 42 L65 42 M35 56 L55 56 M40 75 L47 82 L62 65"/>
+    </svg>
+    <div class="jp">無料査定</div>
+    <div class="en">Free Assessment</div>
+  </div>
+  <div class="cell"><svg class="brand-mark" viewBox="0 0 77.4 77.4"><path d="M2 38.7h36.7v36.7m-7.8 0V46.5H2m20.9 28.9v-21H2m13.2 7.7H2v13.2h13.2V62.1zm23.5 13.3h36.7V38.7M38.7 67.5h28.9V38.7M38.7 59.6h20.9V38.7m-7.7 13.2V38.7H38.7v13.2h13.2zM38.7 2v36.7h36.7M46.5 2v28.9h28.9M54.4 2v20.9h20.9m-13.2-7.7h13.2V2H62.1v13.2zM38.7 2H2v36.7M38.7 9.8H9.8v28.9m28.9-21h-21v20.9m7.7-13.2v13.2h13.2V25.4H25.4z"/></svg>
+    <svg class="icon" viewBox="0 0 100 100">
+      <path d="M12 30 L88 30 L88 75 L12 75 Z M12 30 L50 58 L88 30"/>
+    </svg>
+    <div class="jp">お問合せ</div>
+    <div class="en">Contact</div>
+  </div>
+  <div class="cell"><svg class="brand-mark" viewBox="0 0 77.4 77.4"><path d="M2 38.7h36.7v36.7m-7.8 0V46.5H2m20.9 28.9v-21H2m13.2 7.7H2v13.2h13.2V62.1zm23.5 13.3h36.7V38.7M38.7 67.5h28.9V38.7M38.7 59.6h20.9V38.7m-7.7 13.2V38.7H38.7v13.2h13.2zM38.7 2v36.7h36.7M46.5 2v28.9h28.9M54.4 2v20.9h20.9m-13.2-7.7h13.2V2H62.1v13.2zM38.7 2H2v36.7M38.7 9.8H9.8v28.9m28.9-21h-21v20.9m7.7-13.2v13.2h13.2V25.4H25.4z"/></svg>
+    <svg class="icon" viewBox="0 0 100 100">
+      <path d="M22 90 L22 20 L60 20 L60 90 M60 38 L82 38 L82 90 M10 90 L92 90 M32 35 L42 35 M32 48 L42 48 M32 61 L42 61 M68 50 L75 50 M68 65 L75 65 M38 90 L38 75 L48 75 L48 90"/>
+    </svg>
+    <div class="jp">会社概要</div>
+    <div class="en">About</div>
+  </div>
+</body>
+</html>
