@@ -95,7 +95,7 @@
                         <ul class="footer-nav">
                             <li><a href="tel:${SITE.tel}">${SITE.tel}</a></li>
                             <li><a href="mailto:${SITE.email}">${SITE.email}</a></li>
-                            <li style="color: var(--gray-500); font-size: 0.75rem;">平日 9:00〜18:00</li>
+                            <li style="color: var(--gray-500); font-size: 0.75rem;">年中無休 10:00〜21:00</li>
                         </ul>
                     </div>
                 </div>
