@@ -28,16 +28,16 @@
         if (!el) return;
         el.innerHTML = `
             <div class="header-inner">
-                <a href="/" class="header-logo">
-                    <img src="/logo.svg" alt="Shonan Minato REAL ESTATE">
+                <a href="./" class="header-logo">
+                    <img src="logo.svg" alt="Shonan Minato REAL ESTATE">
                 </a>
                 <nav class="nav-main" id="nav-main">
-                    <a href="/properties.html">Properties</a>
-                    <a href="/market.html">Market</a>
-                    <a href="/about.html">About</a>
-                    <a href="/sell.html">Sell</a>
-                    <a href="/reins-analyzer/">Analyzer</a>
-                    <a href="/contact.html" class="nav-cta">Contact</a>
+                    <a href="properties.html">Properties</a>
+                    <a href="market.html">Market</a>
+                    <a href="about.html">About</a>
+                    <a href="sell.html">Sell</a>
+                    <a href="reins-analyzer/">Analyzer</a>
+                    <a href="contact.html" class="nav-cta">Contact</a>
                 </nav>
                 <button class="menu-toggle" id="menu-toggle" aria-label="menu">
                     <span></span><span></span><span></span>
@@ -58,7 +58,7 @@
                 <div class="footer-grid">
                     <div>
                         <div class="footer-logo">
-                            <img src="/logo.svg" alt="${SITE.name}">
+                            <img src="logo.svg" alt="${SITE.name}">
                         </div>
                         <p class="footer-about">
                             湘南から、資産と暮らしをデザインする。<br>
@@ -74,20 +74,20 @@
                     <div>
                         <div class="footer-title">Services</div>
                         <ul class="footer-nav">
-                            <li><a href="/properties.html?cat=residence">住宅売買</a></li>
-                            <li><a href="/properties.html?cat=investment">投資物件</a></li>
-                            <li><a href="/properties.html?cat=luxury">富裕層向け</a></li>
-                            <li><a href="/properties.html?cat=commercial">法人・テナント</a></li>
-                            <li><a href="/sell.html">売却査定</a></li>
+                            <li><a href="properties.html?cat=residence">住宅売買</a></li>
+                            <li><a href="properties.html?cat=investment">投資物件</a></li>
+                            <li><a href="properties.html?cat=luxury">富裕層向け</a></li>
+                            <li><a href="properties.html?cat=commercial">法人・テナント</a></li>
+                            <li><a href="sell.html">売却査定</a></li>
                         </ul>
                     </div>
                     <div>
                         <div class="footer-title">Company</div>
                         <ul class="footer-nav">
-                            <li><a href="/about.html">会社概要</a></li>
-                            <li><a href="/market.html">市場データ</a></li>
-                            <li><a href="/reins-analyzer/">REINS Analyzer</a></li>
-                            <li><a href="/contact.html">お問い合わせ</a></li>
+                            <li><a href="about.html">会社概要</a></li>
+                            <li><a href="market.html">市場データ</a></li>
+                            <li><a href="reins-analyzer/">REINS Analyzer</a></li>
+                            <li><a href="contact.html">お問い合わせ</a></li>
                         </ul>
                     </div>
                     <div>
@@ -163,7 +163,7 @@
         if (p.built) specs.push(`<span><span class="property-spec-label">築年</span>${p.built}</span>`);
 
         return `
-            <a href="/property.html?id=${p.id}" class="property-card">
+            <a href="property.html?id=${p.id}" class="property-card">
                 <div class="property-image" style="background-image: url('${p.image}')">
                     <div class="property-badges">${badges.join('')}</div>
                 </div>
@@ -179,7 +179,7 @@
 
     async function loadProperties() {
         try {
-            const res = await fetch('/data/properties-demo.json');
+            const res = await fetch('data/properties-demo.json');
             const data = await res.json();
             return data.properties || [];
         } catch (e) {
@@ -253,7 +253,7 @@
         target.innerHTML = `
             <div class="detail-hero">
                 <div class="detail-breadcrumb">
-                    <a href="/">TOP</a> ／ <a href="/properties.html">物件一覧</a> ／ ${p.name}
+                    <a href="./">TOP</a> ／ <a href="properties.html">物件一覧</a> ／ ${p.name}
                 </div>
                 <div class="detail-title-row">
                     <div class="detail-category">${p.categoryLabel} — ${p.subtype}</div>
@@ -285,7 +285,7 @@
                     </div>
                     <div class="detail-contact-cta">
                         <p>この物件についてのご相談</p>
-                        <a href="/contact.html?prop=${p.id}" class="btn btn-primary">お問い合わせ</a>
+                        <a href="contact.html?prop=${p.id}" class="btn btn-primary">お問い合わせ</a>
                     </div>
                 </aside>
             </div>
@@ -299,7 +299,7 @@
         const target = document.getElementById('market-stats');
         if (!target) return;
         try {
-            const res = await fetch('/properties.json');
+            const res = await fetch('properties.json');
             const data = await res.json();
             if (!Array.isArray(data) || !data.length) return;
 
