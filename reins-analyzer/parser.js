@@ -268,6 +268,12 @@ var ReinsParser = (function() {
             // そのまま文字列で保持（スコアリング側で分数を抽出）
         }
 
+        // 面積系: 単位記号を除去して数値のみ保持
+        if (normalizedLabel === '面積(㎡)' || normalizedLabel === '建物面積(㎡)' || normalizedLabel === '土地面積(㎡)') {
+            var aM = value.match(/([\d,]+(?:\.\d+)?)/);
+            if (aM) value = aM[1].replace(/,/g, '');
+        }
+
         if (!data[normalizedLabel]) {
             data[normalizedLabel] = value;
         }

@@ -300,6 +300,7 @@
             var station = escapeHtml(p['駅徒歩(分)'] || '-');
             var structure = escapeHtml(p['構造'] || '-');
             var area = p['面積(㎡)'] || p['建物面積(㎡)'] || p['土地面積(㎡)'] || '-';
+            if (area !== '-') area = String(area).replace(/[㎡m²\s]+$/g, '');
             var reason = escapeHtml(p['判断根拠'] || '');
             var areaEval = escapeHtml(p['エリア評価'] || '');
             var priority = escapeHtml(p['優先度'] || '');
@@ -337,7 +338,7 @@
                             '</div>' +
                             '<div class="prop-meta-item">' +
                                 '<span class="prop-meta-label">面積</span>' +
-                                '<span class="prop-meta-value">' + area + '㎡</span>' +
+                                '<span class="prop-meta-value">' + (area === '-' ? '-' : area + '㎡') + '</span>' +
                             '</div>' +
                         '</div>' +
                         '<div class="prop-reason">' +
@@ -368,7 +369,7 @@
                 '<td>' + (p['表面利回り(%)'] || '-') + '</td>' +
                 '<td>' + escapeHtml(p['駅徒歩(分)'] || '-') + '</td>' +
                 '<td>' + escapeHtml(p['構造'] || '-') + '</td>' +
-                '<td>' + (p['面積(㎡)'] || p['建物面積(㎡)'] || '-') + '</td>' +
+                '<td>' + escapeHtml(String(p['面積(㎡)'] || p['建物面積(㎡)'] || '-').replace(/[㎡m²\s]+$/g, '')) + '</td>' +
                 '<td>' + escapeHtml(p['判断根拠'] || '-') + '</td>';
             tbody.appendChild(tr);
         });
