@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無料売却査定 | Shonan Minato REAL ESTATE</title>
+    <meta name="description" content="湘南・横浜・東京エリアの不動産売却。無料査定承ります。住宅・投資物件・事業用物件問わず対応。">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <div class="page-header">
+        <div class="container">
+            <span class="section-label">Sell Assessment</span>
+            <h1>無料売却査定</h1>
+        </div>
+    </div>
+
+    <section>
+        <div class="container-narrow">
+            <div class="section-header">
+                <span class="section-label">Why Us</span>
+                <h2 class="section-title">湘南の専門知識と、データの力</h2>
+                <p class="section-lead">
+                    湘南・横浜エリアの深い土地勘と、自社開発の AI 査定システム。<br>
+                    感覚ではなく、根拠のある査定価格をご提示します。
+                </p>
+            </div>
+            <div class="axes-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 900px;">
+                <div class="axis-card">
+                    <div class="axis-title">無料・秘密厳守</div>
+                    <p class="axis-desc">査定は完全無料、守秘義務を徹底。売却を前提としないご相談も歓迎です。</p>
+                </div>
+                <div class="axis-card">
+                    <div class="axis-title">エリア特化</div>
+                    <p class="axis-desc">湘南・横浜エリアの成約事例を熟知。地元の相場観に基づいた査定をお出しします。</p>
+                </div>
+                <div class="axis-card">
+                    <div class="axis-title">データ査定</div>
+                    <p class="axis-desc">自社開発 AI システムによる客観的な査定額算出。透明性の高い価格根拠を提示。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-container">
+            <div class="form-card">
+                <h2 class="section-title" style="text-align: center; margin-bottom: 2rem; font-size: 1.4rem;">査定依頼フォーム</h2>
+                <form action="https://formspree.io/f/your-endpoint-here" method="POST">
+                    <div class="form-row">
+                        <label>お名前 <span class="required">必須</span></label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-row">
+                        <label>メールアドレス <span class="required">必須</span></label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-row">
+                        <label>電話番号</label>
+                        <input type="tel" name="tel">
+                    </div>
+                    <div class="form-row">
+                        <label>物件種別 <span class="required">必須</span></label>
+                        <select name="type" required>
+                            <option value="">選択してください</option>
+                            <option value="house">戸建</option>
+                            <option value="mansion">マンション</option>
+                            <option value="land">土地</option>
+                            <option value="building">一棟物件</option>
+                            <option value="commercial">事業用</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>物件所在地 <span class="required">必須</span></label>
+                        <input type="text" name="address" required placeholder="例：神奈川県茅ヶ崎市東海岸南3丁目">
+                    </div>
+                    <div class="form-row">
+                        <label>物件面積（㎡）</label>
+                        <input type="text" name="size" placeholder="例：120">
+                    </div>
+                    <div class="form-row">
+                        <label>築年数</label>
+                        <input type="text" name="built" placeholder="例：2005年築">
+                    </div>
+                    <div class="form-row">
+                        <label>備考・ご希望</label>
+                        <textarea name="message" placeholder="売却時期のご希望、現在の状況などご自由にお書きください。"></textarea>
+                    </div>
+                    <div class="form-submit">
+                        <button type="submit" class="btn btn-navy">査定を依頼する</button>
+                    </div>
+                    <p class="form-note">
+                        ご入力いただいた情報は、査定業務の目的にのみ使用いたします。<br>
+                        通常 2〜3営業日以内に査定結果をご連絡いたします。
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer id="site-footer" class="site-footer"></footer>
+    <script src="/main.js"></script>
+</body>
+</html>

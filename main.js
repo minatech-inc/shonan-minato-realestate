@@ -1,195 +1,352 @@
 /**
- * MinaTech LP - メインスクリプト
- * 物件データの動的表示、フォーム送信、UI制御
+ * Shonan Minato REAL ESTATE - Main Script
+ * - Shared header/footer injection
+ * - Hero slideshow
+ * - Scroll-based header style
+ * - Property rendering from JSON
+ * - Mobile menu toggle
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+(function () {
+    'use strict';
 
-    // ======== ヘッダー スクロール ========
-    const header = document.querySelector('.header');
-    window.addEventListener('scroll', function() {
-        header.classList.toggle('scrolled', window.scrollY > 10);
-    });
+    const SITE = {
+        name: 'Shonan Minato REAL ESTATE',
+        nameFull: 'MinaTech株式会社',
+        tel: '0467-28-7603',
+        email: 'isoya.h@minatech1210.com',
+        address: '〒251-0055 神奈川県藤沢市南藤沢3-12 クリオ藤沢駅前 7階',
+        license: '宅地建物取引業：神奈川県知事（1）第32624号',
+        ceo: '代表取締役 磯谷 肇'
+    };
 
-    // ======== モバイルナビ ========
-    const navToggle = document.querySelector('.nav-toggle');
-    const nav = document.querySelector('.nav');
-    if (navToggle) {
-        navToggle.addEventListener('click', function() {
-            nav.classList.toggle('open');
+    // ============================================
+    // Header / Navigation
+    // ============================================
+    function injectHeader() {
+        const el = document.getElementById('site-header');
+        if (!el) return;
+        el.innerHTML = `
+            <div class="header-inner">
+                <a href="/" class="header-logo">
+                    <img src="/logo.svg" alt="Shonan Minato REAL ESTATE">
+                </a>
+                <nav class="nav-main" id="nav-main">
+                    <a href="/properties.html">Properties</a>
+                    <a href="/market.html">Market</a>
+                    <a href="/about.html">About</a>
+                    <a href="/sell.html">Sell</a>
+                    <a href="/reins-analyzer/">Analyzer</a>
+                    <a href="/contact.html" class="nav-cta">Contact</a>
+                </nav>
+                <button class="menu-toggle" id="menu-toggle" aria-label="menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        `;
+        const toggle = document.getElementById('menu-toggle');
+        const nav = document.getElementById('nav-main');
+        toggle?.addEventListener('click', () => nav.classList.toggle('open'));
+    }
+
+    function injectFooter() {
+        const el = document.getElementById('site-footer');
+        if (!el) return;
+        const year = new Date().getFullYear();
+        el.innerHTML = `
+            <div class="container">
+                <div class="footer-grid">
+                    <div>
+                        <div class="footer-logo">
+                            <img src="/logo.svg" alt="${SITE.name}">
+                        </div>
+                        <p class="footer-about">
+                            湘南から、資産と暮らしをデザインする。<br>
+                            湘南・横浜・東京エリアで、住宅・投資・法人向け不動産を取り扱う総合不動産会社。
+                        </p>
+                        <p class="footer-license">
+                            ${SITE.nameFull}<br>
+                            ${SITE.address}<br>
+                            ${SITE.license}<br>
+                            TEL: ${SITE.tel}
+                        </p>
+                    </div>
+                    <div>
+                        <div class="footer-title">Services</div>
+                        <ul class="footer-nav">
+                            <li><a href="/properties.html?cat=residence">住宅売買</a></li>
+                            <li><a href="/properties.html?cat=investment">投資物件</a></li>
+                            <li><a href="/properties.html?cat=luxury">富裕層向け</a></li>
+                            <li><a href="/properties.html?cat=commercial">法人・テナント</a></li>
+                            <li><a href="/sell.html">売却査定</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="footer-title">Company</div>
+                        <ul class="footer-nav">
+                            <li><a href="/about.html">会社概要</a></li>
+                            <li><a href="/market.html">市場データ</a></li>
+                            <li><a href="/reins-analyzer/">REINS Analyzer</a></li>
+                            <li><a href="/contact.html">お問い合わせ</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="footer-title">Contact</div>
+                        <ul class="footer-nav">
+                            <li><a href="tel:${SITE.tel}">${SITE.tel}</a></li>
+                            <li><a href="mailto:${SITE.email}">${SITE.email}</a></li>
+                            <li style="color: var(--gray-500); font-size: 0.75rem;">平日 9:00〜18:00</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    © ${year} ${SITE.name} (${SITE.nameFull}) — All Rights Reserved.
+                </div>
+            </div>
+        `;
+    }
+
+    // ============================================
+    // Header scroll behavior
+    // ============================================
+    function initHeaderScroll() {
+        const header = document.getElementById('site-header');
+        if (!header) return;
+        const update = () => {
+            if (window.scrollY > 40) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        };
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+    }
+
+    // ============================================
+    // Hero slideshow
+    // ============================================
+    function initHeroSlideshow() {
+        const slides = document.querySelectorAll('.hero-slide');
+        if (slides.length < 2) return;
+        let idx = 0;
+        slides[0].classList.add('active');
+        setInterval(() => {
+            slides[idx].classList.remove('active');
+            idx = (idx + 1) % slides.length;
+            slides[idx].classList.add('active');
+        }, 6000);
+    }
+
+    // ============================================
+    // Property rendering
+    // ============================================
+    function formatPrice(p) {
+        if (!p) return '—';
+        if (p.rentType === '賃貸') {
+            return `${p.price.toLocaleString()}<small>${p.priceUnit}</small>`;
+        }
+        return `${p.price.toLocaleString()}<small>${p.priceUnit}</small>`;
+    }
+
+    function propertyCardHTML(p) {
+        const badges = [];
+        if (p.tags) p.tags.forEach(t => {
+            let cls = 'property-badge';
+            if (t === 'NEW') cls += ' new';
+            if (t === 'DEMO') cls += ' demo';
+            badges.push(`<span class="${cls}">${t}</span>`);
         });
-        // リンククリックで閉じる
-        nav.querySelectorAll('a').forEach(function(link) {
-            link.addEventListener('click', function() {
-                nav.classList.remove('open');
+        badges.push('<span class="property-badge demo">DEMO</span>');
+
+        const specs = [];
+        if (p.layout) specs.push(`<span><span class="property-spec-label">間取</span>${p.layout}</span>`);
+        if (p.size) specs.push(`<span><span class="property-spec-label">面積</span>${p.size}㎡</span>`);
+        if (p.yield) specs.push(`<span><span class="property-spec-label">利回り</span>${p.yield}%</span>`);
+        if (p.built) specs.push(`<span><span class="property-spec-label">築年</span>${p.built}</span>`);
+
+        return `
+            <a href="/property.html?id=${p.id}" class="property-card">
+                <div class="property-image" style="background-image: url('${p.image}')">
+                    <div class="property-badges">${badges.join('')}</div>
+                </div>
+                <div class="property-body">
+                    <div class="property-category">${p.categoryLabel} · ${p.area}</div>
+                    <div class="property-name">${p.name}</div>
+                    <div class="property-price">${formatPrice(p)}</div>
+                    <div class="property-specs">${specs.join('')}</div>
+                </div>
+            </a>
+        `;
+    }
+
+    async function loadProperties() {
+        try {
+            const res = await fetch('/data/properties-demo.json');
+            const data = await res.json();
+            return data.properties || [];
+        } catch (e) {
+            console.warn('物件データ読込失敗', e);
+            return [];
+        }
+    }
+
+    async function renderFeatured() {
+        const target = document.getElementById('featured-properties');
+        if (!target) return;
+        const props = await loadProperties();
+        const limit = parseInt(target.dataset.limit || '6', 10);
+        const featured = props.slice(0, limit);
+        target.innerHTML = featured.map(propertyCardHTML).join('');
+    }
+
+    async function renderPropertiesList() {
+        const target = document.getElementById('properties-list');
+        if (!target) return;
+        const props = await loadProperties();
+        const urlParams = new URLSearchParams(location.search);
+        const initialCat = urlParams.get('cat') || 'all';
+
+        const render = (cat) => {
+            const filtered = cat === 'all' ? props : props.filter(p => p.category === cat);
+            target.innerHTML = filtered.length
+                ? filtered.map(propertyCardHTML).join('')
+                : '<p style="grid-column: 1/-1; text-align:center; color: var(--gray-500); padding: 4rem 0;">該当する物件はありません。</p>';
+        };
+
+        const btns = document.querySelectorAll('.filter-btn');
+        btns.forEach(b => {
+            if (b.dataset.cat === initialCat) b.classList.add('active');
+            b.addEventListener('click', () => {
+                btns.forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+                render(b.dataset.cat);
             });
         });
+        render(initialCat);
     }
 
-    // ======== 物件データ読み込み ========
-    loadProperties();
+    async function renderPropertyDetail() {
+        const target = document.getElementById('property-detail');
+        if (!target) return;
+        const id = new URLSearchParams(location.search).get('id');
+        const props = await loadProperties();
+        const p = props.find(x => x.id === id) || props[0];
+        if (!p) {
+            target.innerHTML = '<p>物件が見つかりませんでした。</p>';
+            return;
+        }
 
-    // ======== フォーム送信 ========
-    var form = document.getElementById('contactForm');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleFormSubmit(form);
-        });
+        const specs = [
+            ['カテゴリ', p.categoryJP],
+            ['種別', p.subtype],
+            ['所在地', p.location],
+            ['交通', p.access],
+            ['間取り', p.layout || '—'],
+            ['建物面積', p.size ? `${p.size}㎡` : '—'],
+            ['土地面積', p.landSize ? `${p.landSize}㎡` : '—'],
+            ['築年月', p.built || '—'],
+            ['構造', p.structure || '—']
+        ];
+        if (p.yield) specs.push(['表面利回り', `${p.yield}%`]);
+        if (p.occupancy) specs.push(['入居状況', p.occupancy]);
+
+        document.title = `${p.name} | Shonan Minato REAL ESTATE`;
+
+        target.innerHTML = `
+            <div class="detail-hero">
+                <div class="detail-breadcrumb">
+                    <a href="/">TOP</a> ／ <a href="/properties.html">物件一覧</a> ／ ${p.name}
+                </div>
+                <div class="detail-title-row">
+                    <div class="detail-category">${p.categoryLabel} — ${p.subtype}</div>
+                    <h1 class="detail-name">${p.name}</h1>
+                    <p class="detail-location">${p.location} ／ ${p.access}</p>
+                </div>
+            </div>
+            <div class="detail-body">
+                <div>
+                    <div class="detail-main-image" style="background-image: url('${p.image}')"></div>
+                    <div class="detail-description">${p.description}</div>
+                    ${p.features ? `<p style="font-size: 0.85rem; color: var(--gray-500);">特徴：${p.features.join(' / ')}</p>` : ''}
+                    <p style="margin-top: 2rem; padding: 1rem; background: var(--ivory); font-size: 0.8rem; color: var(--gray-500);">
+                        ※本物件はサイト開設準備中のサンプル物件です。実際の取引にはご利用いただけません。
+                    </p>
+                </div>
+                <aside class="detail-sidebar">
+                    <div class="detail-price-box">
+                        <div class="detail-price-label">${p.rentType || '価格'}</div>
+                        <div class="detail-price-value">${p.price.toLocaleString()}<span style="font-size: 1rem; color: var(--gray-500);"> ${p.priceUnit}</span></div>
+                        <div class="detail-specs">
+                            ${specs.map(([k, v]) => `
+                                <div class="detail-specs-row">
+                                    <span class="detail-specs-label">${k}</span>
+                                    <span class="detail-specs-value">${v}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="detail-contact-cta">
+                        <p>この物件についてのご相談</p>
+                        <a href="/contact.html?prop=${p.id}" class="btn btn-primary">お問い合わせ</a>
+                    </div>
+                </aside>
+            </div>
+        `;
     }
 
-    // ======== スムーズスクロール（Safari対応） ========
-    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            var target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                var offset = header.offsetHeight + 16;
-                var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-                window.scrollTo({ top: top, behavior: 'smooth' });
-            }
-        });
+    // ============================================
+    // Market data (from scraper results)
+    // ============================================
+    async function renderMarketStats() {
+        const target = document.getElementById('market-stats');
+        if (!target) return;
+        try {
+            const res = await fetch('/properties.json');
+            const data = await res.json();
+            if (!Array.isArray(data) || !data.length) return;
+
+            const avgYield = data
+                .map(p => parseFloat(p['表面利回り(%)']))
+                .filter(y => !isNaN(y))
+                .reduce((a, b, _, arr) => a + b / arr.length, 0);
+
+            const prices = data.map(p => parseFloat(p['価格(万円)'])).filter(p => !isNaN(p));
+            const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+            const minPrice = Math.min(...prices);
+            const sScore = data.filter(p => String(p['優先度']).startsWith('S')).length;
+
+            target.innerHTML = `
+                <div class="market-stat">
+                    <div class="market-stat-value">${data.length}</div>
+                    <div class="market-stat-label">分析済み物件数</div>
+                </div>
+                <div class="market-stat">
+                    <div class="market-stat-value">${avgYield.toFixed(1)}%</div>
+                    <div class="market-stat-label">平均表面利回り</div>
+                </div>
+                <div class="market-stat">
+                    <div class="market-stat-value">${minPrice.toLocaleString()}</div>
+                    <div class="market-stat-label">最低価格（万円）</div>
+                </div>
+                <div class="market-stat">
+                    <div class="market-stat-value">${sScore}</div>
+                    <div class="market-stat-label">S評価物件数</div>
+                </div>
+            `;
+        } catch (e) {
+            console.warn('市場データ読込失敗', e);
+        }
+    }
+
+    // ============================================
+    // Init
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        injectHeader();
+        injectFooter();
+        initHeaderScroll();
+        initHeroSlideshow();
+        renderFeatured();
+        renderPropertiesList();
+        renderPropertyDetail();
+        renderMarketStats();
     });
-});
-
-
-/**
- * 物件データをJSONから読み込んで表示
- */
-function loadProperties() {
-    var container = document.getElementById('property-list');
-    var emptyMsg = document.getElementById('property-empty');
-    var statEl = document.getElementById('stat-properties');
-
-    fetch('properties.json')
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (!data || data.length === 0) {
-                if (emptyMsg) emptyMsg.style.display = 'block';
-                if (statEl) statEl.textContent = '0';
-                return;
-            }
-
-            if (statEl) statEl.textContent = data.length;
-
-            data.forEach(function(p) {
-                var card = createPropertyCard(p);
-                container.appendChild(card);
-            });
-        })
-        .catch(function() {
-            if (emptyMsg) emptyMsg.style.display = 'block';
-            if (statEl) statEl.textContent = '0';
-        });
-}
-
-
-/**
- * 物件カードHTML生成
- */
-function createPropertyCard(p) {
-    var card = document.createElement('div');
-    card.className = 'property-card';
-
-    var rank = p['優先度'] || p['推奨度'] || '';
-    var rankClass = 'rank-a';
-    var rankLabel = 'A';
-    if (rank.indexOf('S') === 0) {
-        rankClass = 'rank-s';
-        rankLabel = 'S';
-    }
-
-    var name = escapeHtml(p['物件名'] || p['案件名'] || '物件名未定');
-    var price = p['価格(万円)'] || '-';
-    var yieldVal = p['表面利回り(%)'] || '-';
-    var location = escapeHtml(p['所在地'] || '-');
-    var area = p['面積(㎡)'] || p['面積'] || '-';
-    var structure = escapeHtml(p['構造'] || '-');
-    var score = p['スコア'] || '-';
-    var reason = escapeHtml(p['判断根拠'] || '');
-    var url = p['物件URL'] || '#contact';
-
-    // 問い合わせフォームへの誘導URL（物件名を自動セット）
-    var contactUrl = '#contact';
-    var encodedName = encodeURIComponent(name.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'));
-
-    card.innerHTML =
-        '<div class="property-header">' +
-            '<span class="property-rank ' + rankClass + '">' + rankLabel + '評価 (スコア: ' + score + '/10)</span>' +
-            '<h3 class="property-name">' + name + '</h3>' +
-        '</div>' +
-        '<div class="property-body">' +
-            '<dl class="property-info">' +
-                '<dt>価格</dt><dd class="price">' + price + '万円</dd>' +
-                '<dt>表面利回り</dt><dd class="yield">' + yieldVal + '%</dd>' +
-                '<dt>所在地</dt><dd>' + location + '</dd>' +
-                '<dt>面積</dt><dd>' + area + '</dd>' +
-            '</dl>' +
-        '</div>' +
-        '<div class="property-footer">' +
-            '<span>' + reason + '</span>' +
-            '<a href="' + contactUrl + '" class="property-inquiry-btn" data-property="' + escapeHtml(name) + ' / ' + price + '万円 / ' + location + '">この物件について相談する</a>' +
-        '</div>';
-
-    // クリック時にフォームの相談内容に物件情報を自動入力
-    var inquiryBtn = card.querySelector('.property-inquiry-btn');
-    if (inquiryBtn) {
-        inquiryBtn.addEventListener('click', function(e) {
-            var propInfo = this.getAttribute('data-property');
-            var textarea = document.getElementById('message');
-            if (textarea) {
-                textarea.value = '【物件のお問い合わせ】\n' + propInfo + '\n\nこちらの物件について詳細を教えてください。';
-            }
-        });
-    }
-
-    return card;
-}
-
-
-/**
- * フォーム送信処理
- * Google FormsまたはMailtoにフォールバック
- */
-function handleFormSubmit(form) {
-    var name = form.querySelector('#name').value;
-    var email = form.querySelector('#email').value;
-    var phone = form.querySelector('#phone').value;
-    var budget = form.querySelector('#budget').value;
-    var message = form.querySelector('#message').value;
-
-    // mailto フォールバック（Google Forms未設定時）
-    var subject = encodeURIComponent('[MinaTech LP] ' + name + '様からのお問い合わせ');
-    var body = encodeURIComponent(
-        'お名前: ' + name + '\n' +
-        'メール: ' + email + '\n' +
-        '電話: ' + phone + '\n' +
-        'ご予算: ' + budget + '\n\n' +
-        'ご相談内容:\n' + message
-    );
-
-    window.location.href = 'mailto:isoya.h@minatech1210.com?subject=' + subject + '&body=' + body;
-
-    // 送信完了表示
-    var btn = form.querySelector('.btn-submit');
-    btn.textContent = '送信しました';
-    btn.style.background = '#27ae60';
-    setTimeout(function() {
-        btn.textContent = '無料で相談する';
-        btn.style.background = '';
-    }, 3000);
-}
-
-
-/**
- * HTMLエスケープ
- */
-function escapeHtml(str) {
-    if (!str) return '';
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+})();
