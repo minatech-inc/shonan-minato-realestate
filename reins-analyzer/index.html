@@ -96,6 +96,95 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 区分マンション専用 追加入力パネル -->
+            <div id="condo-panel" class="condo-panel" style="display:none;">
+                <div class="condo-panel-header">
+                    <strong>区分マンション専用 追加情報</strong>
+                    <span class="condo-hint">（任意・空欄でも解析可能。入力すると実質利回り・管理組合健全性も評価します）</span>
+                </div>
+                <div class="condo-grid">
+                    <div class="condo-field">
+                        <label>管理費（円/月）</label>
+                        <input type="number" id="condo-kanri" placeholder="例: 15000">
+                    </div>
+                    <div class="condo-field">
+                        <label>修繕積立金（円/月）</label>
+                        <input type="number" id="condo-shuzen" placeholder="例: 12000">
+                    </div>
+                    <div class="condo-field">
+                        <label>修繕積立基金（一時金・円）</label>
+                        <input type="number" id="condo-kikin" placeholder="例: 300000">
+                    </div>
+                    <div class="condo-field">
+                        <label>所在階 / 総階数</label>
+                        <input type="text" id="condo-floor" placeholder="例: 8/15">
+                    </div>
+                    <div class="condo-field">
+                        <label>向き</label>
+                        <select id="condo-direction">
+                            <option value="">（未入力）</option>
+                            <option>南</option><option>南東</option><option>南西</option>
+                            <option>東</option><option>西</option>
+                            <option>北東</option><option>北西</option><option>北</option>
+                        </select>
+                    </div>
+                    <div class="condo-field">
+                        <label>管理形態</label>
+                        <select id="condo-mgmt">
+                            <option value="">（未入力）</option>
+                            <option>全部委託</option>
+                            <option>一部委託</option>
+                            <option>自主管理</option>
+                        </select>
+                    </div>
+                    <div class="condo-field">
+                        <label>大規模修繕実施回数</label>
+                        <input type="number" id="condo-daishu-count" placeholder="例: 2" min="0">
+                    </div>
+                    <div class="condo-field">
+                        <label>直近の大規模修繕実施年</label>
+                        <input type="number" id="condo-daishu-year" placeholder="例: 2018" min="1970" max="2030">
+                    </div>
+                    <div class="condo-field">
+                        <label>長期修繕計画</label>
+                        <select id="condo-plan">
+                            <option value="">（未入力）</option>
+                            <option value="yes">策定済み</option>
+                            <option value="no">未策定</option>
+                        </select>
+                    </div>
+                    <div class="condo-field">
+                        <label>管理組合 借入金残高（万円）</label>
+                        <input type="number" id="condo-loan" placeholder="0=なし" min="0">
+                    </div>
+                    <div class="condo-field">
+                        <label>管理組合 積立金残高（万円）</label>
+                        <input type="number" id="condo-reserve" placeholder="例: 5000" min="0">
+                    </div>
+                    <div class="condo-field">
+                        <label>滞納世帯率（%）</label>
+                        <input type="number" id="condo-taino" placeholder="例: 2" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="condo-field">
+                        <label>駐車場権利</label>
+                        <select id="condo-parking">
+                            <option value="">（未入力）</option>
+                            <option>敷地権あり</option>
+                            <option>使用権（抽選）</option>
+                            <option>なし</option>
+                        </select>
+                    </div>
+                    <div class="condo-field">
+                        <label>ペット可否</label>
+                        <select id="condo-pet">
+                            <option value="">（未入力）</option>
+                            <option value="yes">可</option>
+                            <option value="no">不可</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="input-tabs">
                 <button class="tab active" data-tab="paste">テキスト貼り付け</button>
                 <button class="tab" data-tab="manual">手動入力</button>
@@ -258,6 +347,7 @@
                     <button id="btn-export-excel" class="btn btn-outline">Excel出力</button>
                     <button id="btn-export-json" class="btn btn-outline">JSON出力</button>
                     <button id="btn-export-pdf" class="btn btn-outline">PDFレポート</button>
+                    <button id="btn-export-bank" class="btn btn-outline">銀行担保評価書</button>
                     <button id="btn-save-history" class="btn btn-outline">履歴に保存</button>
                     <button id="btn-open-history" class="btn btn-outline">履歴/比較</button>
                 </div>
@@ -374,6 +464,7 @@
     <script src="explanation.js"></script>
     <script src="scorer.js"></script>
     <script src="history.js"></script>
+    <script src="bankReport.js"></script>
     <script src="app.js"></script>
     <script src="pdf-analyzer.js"></script>
 </body>

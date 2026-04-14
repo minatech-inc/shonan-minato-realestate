@@ -25,6 +25,11 @@ var Explanation = (function() {
         lines.push('【積算評価】');
         lines.push('本物件の積算価格は ' + fmt(total) + '万円（土地 ' + fmt(land) + '万円 + 建物 ' + fmt(bldg) + '万円）と算出されました。');
         lines.push('土地単価は ' + unit + '万円/㎡（' + src + '）を採用し、敷地面積を掛け合わせて土地積算を算出。建物積算は延床面積×構造別再調達単価（RC=22万円/㎡、SRC=24万円/㎡、鉄骨=18万円/㎡、木造=16万円/㎡）に「残存耐用年数÷法定耐用年数」を乗じて経年減価を反映しています。');
+        if (p['維持管理補正'] !== undefined && p['維持管理補正'] !== 1.0) {
+            var mf = p['維持管理補正'];
+            var mlabel = p['維持管理要因'] || '';
+            lines.push('さらに不動産鑑定評価基準の「観察減価法」に基づき、維持管理状態を加味した補正係数 ' + mf.toFixed(2) + ' を建物積算に乗じています（要因: ' + mlabel + '）。これはリフォーム・大規模修繕履歴・長期修繕計画・エリア特性（塩害）などを個別要因として観察し、法定耐用年数のみでは捉えきれない物理的・機能的減価を補正するもので、金融機関の担保評価部が用いる実務レンジ(0.80〜1.20)に準拠しています。');
+        }
         lines.push('売出価格 ' + fmt(price) + '万円に対する積算比は ' + ratio + '%です。');
 
         if (ratio >= 100) {
@@ -168,6 +173,16 @@ var Explanation = (function() {
         return lines.join('\n');
     }
 
+    function condoHealth(p) {
+        if (!p['区分健全性_詳細'] || !p['区分健全性_詳細'].length) return '';
+        var lines = [];
+        lines.push('【区分マンション健全性評価】');
+        lines.push('本評価は国交省「マンションの修繕積立金に関するガイドライン」(2021改訂版)、標準管理規約、管理組合実務の観点から、区分所有物件特有の健全性を多角的に判定したものです。');
+        p['区分健全性_詳細'].forEach(function(d) { lines.push('・' + d); });
+        lines.push('※ これらの要素は物件単体の表面利回りや立地評価では捉えられない「保有中コスト」と「出口流動性」を左右します。特に旧耐震・小規模・修繕積立金過少・組合借入ありの組み合わせは、将来の一時金徴収・売却時の値引き交渉材料となるため、購入前に管理組合総会議事録・長期修繕計画書・重要事項調査報告書の確認を強く推奨します。');
+        return lines.join('\n');
+    }
+
     function transactions(p, cmp) {
         if (!cmp) return '';
         var lines = [];
@@ -188,7 +203,7 @@ var Explanation = (function() {
     }
 
     function buildAll(p) {
-        var parts = [appraisal(p), income(p), hazard(p), financing(p), futureValue(p), overall(p)];
+        var parts = [appraisal(p), income(p), condoHealth(p), hazard(p), financing(p), futureValue(p), overall(p)];
         if (p['取引事例_説明']) parts.push(p['取引事例_説明']);
         return parts.filter(function(s) { return s; }).join('\n\n');
     }
@@ -200,6 +215,7 @@ var Explanation = (function() {
         financing: financing,
         futureValue: futureValue,
         transactions: transactions,
+        condoHealth: condoHealth,
         overall: overall,
         buildAll: buildAll
     };

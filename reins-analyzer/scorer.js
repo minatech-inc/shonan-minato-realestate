@@ -117,6 +117,128 @@ var ReinsScorer = (function() {
     }
 
     /**
+     * 区分マンション健全性評価
+     * 根拠:
+     *   - 国交省「マンションの修繕積立金に関するガイドライン」(2021改訂版)
+     *     15階未満: 基準 252円/㎡/月（幅 165〜350）
+     *     20階以上: 基準 338円/㎡/月（幅 240〜450）
+     *   - 新耐震基準: 1981年6月以降（築年から逆算）
+     *   - 大規模修繕サイクル: 12〜18年が標準
+     *   - 総戸数: 50戸以上で管理組合運営が安定、20戸未満は一人当たり負担増
+     */
+    function evaluateCondoHealth(prop, age, area) {
+        var delta = 0;
+        var reasons = [];
+        var details = [];
+
+        // --- 耐震基準 ---
+        if (age !== null) {
+            var builtYear = new Date().getFullYear() - age;
+            if (builtYear < 1981) {
+                delta -= 3;
+                reasons.push('旧耐震(' + builtYear + '年築,-3)');
+                details.push('旧耐震基準(1981年6月以前)。住宅ローン審査・耐震改修負担・売却流動性で大きな不利。');
+            } else if (builtYear < 2000) {
+                details.push('新耐震基準(' + builtYear + '年築)。2000年改正前だが現行基準を満たす。');
+            } else {
+                details.push('現行耐震基準(' + builtYear + '年築)。');
+            }
+        }
+
+        // --- 総戸数 ---
+        var units = parseFloat(prop['総戸数']) || null;
+        if (units) {
+            if (units >= 200) {
+                delta += 1;
+                reasons.push('大規模' + units + '戸(+1)');
+                details.push('大規模マンション(200戸以上)。管理組合運営が安定し、スケールメリットで修繕コストが低減される。');
+            } else if (units >= 50) {
+                details.push('中規模マンション(' + units + '戸)。管理組合運営が健全に機能する標準規模。');
+            } else if (units >= 20) {
+                delta -= 1;
+                reasons.push('小規模' + units + '戸(-1)');
+                details.push('小規模マンション(' + units + '戸)。一人当たり修繕負担が増えやすく、大規模修繕時の資金不足リスクあり。');
+            } else {
+                delta -= 2;
+                reasons.push('超小規模' + units + '戸(-2)');
+                details.push('超小規模マンション(20戸未満)。管理費・修繕積立金の一人当たり負担が大きく、管理組合運営が脆弱。');
+            }
+        }
+
+        // --- 修繕積立金の適正性（国交省ガイドライン比較） ---
+        var shuzen = parseFloat(prop['修繕積立金(円/月)']) || 0;
+        var totalFloors = parseFloat(prop['総階数']) || 0;
+        if (shuzen > 0 && area > 0) {
+            var unitPrice = shuzen / area; // 円/㎡/月
+            var standard = 252, low = 165, high = 350;
+            if (totalFloors >= 20) { standard = 338; low = 240; high = 450; }
+            else if (totalFloors >= 15) { standard = 271; low = 170; high = 400; }
+            details.push('修繕積立金単価 ' + unitPrice.toFixed(0) + '円/㎡/月（国交省ガイドライン基準 ' + standard + '円/㎡/月）。');
+            if (unitPrice < low) {
+                delta -= 2;
+                reasons.push('積立金過少(' + unitPrice.toFixed(0) + '円/㎡,-2)');
+                details.push('ガイドライン下限を下回り、将来の大規模修繕時に一時金徴収または借入が必要になるリスクが高い。');
+            } else if (unitPrice > high) {
+                delta -= 1;
+                reasons.push('積立金過大(' + unitPrice.toFixed(0) + '円/㎡,-1)');
+                details.push('ガイドライン上限を超過。既に修繕不足を積立金増額で解消している可能性があり、背景確認を推奨。');
+            } else {
+                delta += 1;
+                reasons.push('積立金適正(+1)');
+                details.push('国交省ガイドラインの適正範囲内。長期修繕計画が概ね健全に機能している目安。');
+            }
+        }
+
+        // --- 管理組合財務 ---
+        var loan = parseFloat(prop['管理組合借入金(万円)']);
+        if (!isNaN(loan) && loan > 0) {
+            delta -= 2;
+            reasons.push('組合借入' + loan + '万円(-2)');
+            details.push('管理組合に借入金残高あり。過去の修繕費不足を借入で補填した履歴で、将来の積立金増額圧力が強い。');
+        }
+
+        // --- 滞納率 ---
+        var taino = parseFloat(prop['滞納世帯率(%)']);
+        if (!isNaN(taino)) {
+            if (taino >= 10) { delta -= 2; reasons.push('滞納' + taino + '%(-2)'); details.push('滞納率10%超。管理組合運営の破綻リスクが高い危険水域。'); }
+            else if (taino >= 5) { delta -= 1; reasons.push('滞納' + taino + '%(-1)'); details.push('滞納率5〜10%。要注意水準で、将来の管理費・積立金改定時に住民トラブル化する可能性。'); }
+            else { details.push('滞納率' + taino + '%(良好)。'); }
+        }
+
+        // --- 大規模修繕履歴 ---
+        var lastRepair = parseFloat(prop['大規模修繕直近年']);
+        if (!isNaN(lastRepair) && lastRepair > 0) {
+            var yearsSince = new Date().getFullYear() - lastRepair;
+            details.push('直近の大規模修繕: ' + lastRepair + '年(' + yearsSince + '年前)。');
+            if (yearsSince >= 20) { delta -= 2; reasons.push('修繕20年超未実施(-2)'); details.push('大規模修繕サイクル(12〜18年)を大幅に超過。近い将来に修繕が必須で一時金リスク。'); }
+            else if (yearsSince >= 15) { details.push('次回大規模修繕時期が近づいている。長期修繕計画の進捗確認を推奨。'); }
+        } else if (age !== null && age >= 15) {
+            var repairCount = parseFloat(prop['大規模修繕実施回数']);
+            if (!isNaN(repairCount) && repairCount === 0) {
+                delta -= 2;
+                reasons.push('築' + age + '年で修繕履歴なし(-2)');
+                details.push('築15年超にもかかわらず大規模修繕未実施。近々に多額の修繕費が発生する可能性が極めて高い。');
+            }
+        }
+
+        // --- 長期修繕計画の有無 ---
+        if (prop['長期修繕計画'] === 'no') {
+            delta -= 1;
+            reasons.push('長計未策定(-1)');
+            details.push('長期修繕計画が未策定。国交省標準管理規約で策定が義務化されており、管理組合の運営力に疑問。');
+        }
+
+        // --- 管理形態 ---
+        if (prop['管理形態'] === '自主管理') {
+            delta -= 1;
+            reasons.push('自主管理(-1)');
+            details.push('管理会社委託なしの自主管理。組合員負担が大きく、管理水準の維持に不安。');
+        }
+
+        return { delta: delta, reasons: reasons, details: details };
+    }
+
+    /**
      * メインスコアリング関数
      * @param {Object} prop - パース済み物件データ
      * @returns {Object} スコアリング結果
@@ -234,6 +356,10 @@ var ReinsScorer = (function() {
                 prop['積算比(%)'] = appraisal.ratioPct;
                 prop['土地単価(万円/㎡)'] = appraisal.pricePerSqm;
                 prop['地価出典'] = appraisal.priceSource;
+                if (appraisal.maintenanceFactor !== undefined) {
+                    prop['維持管理補正'] = appraisal.maintenanceFactor;
+                    prop['維持管理要因'] = appraisal.maintenanceLabel;
+                }
             }
 
             // === 収益還元（Phase B） ===
@@ -292,6 +418,17 @@ var ReinsScorer = (function() {
         var roadTouchM = road.match(/接道\s*([\d.]+)\s*m/) || road.match(/間口\s*([\d.]+)\s*m/);
         if (roadTouchM && parseFloat(roadTouchM[1]) < 2) {
             score -= 2; reasons.push('接道<2m(再建築困難)');
+        }
+
+        // === 区分マンション固有評価 ===
+        if (cat === 'condo') {
+            var cArea = parseFloat(prop['面積(㎡)']) || parseFloat(prop['専有面積(㎡)']) || 0;
+            var condoRes = evaluateCondoHealth(prop, age, cArea);
+            score += condoRes.delta;
+            if (condoRes.reasons.length) {
+                for (var cri = 0; cri < condoRes.reasons.length; cri++) reasons.push(condoRes.reasons[cri]);
+            }
+            prop['区分健全性_詳細'] = condoRes.details;
         }
 
         // === 実質利回りチェック ===
@@ -374,6 +511,7 @@ var ReinsScorer = (function() {
             // 詳細説明文を生成（HTML表示・エクスポート両対応）
             if (typeof Explanation !== 'undefined') {
                 prop['積算評価_説明'] = Explanation.appraisal(prop);
+                if (Explanation.condoHealth) prop['区分健全性_説明'] = Explanation.condoHealth(prop);
                 prop['収益還元_説明'] = Explanation.income(prop);
                 prop['ハザード_説明'] = Explanation.hazard(prop);
                 prop['融資判定_説明'] = Explanation.financing(prop);

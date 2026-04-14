@@ -148,6 +148,86 @@ var Appraisal = (function() {
         return year ? (new Date().getFullYear() - year) : null;
     }
 
+    /**
+     * 建物積算の維持管理補正係数（B-3 建物積算精緻化）
+     * 基礎式 bldgArea × unit × (remain/life) に対する補正倍率を算出
+     *
+     * 根拠:
+     *   - 不動産鑑定評価基準 第6章「観察減価法」: 物理的・機能的・経済的減価を
+     *     個別要因として観察し、法定減価に補正をかける
+     *   - 国交省「長期優良住宅認定基準」・修繕履歴の保全効果
+     *   - 実務で銀行担保評価部が用いる保守状態査定レンジ (0.80〜1.15)
+     *
+     * 補正要因:
+     *   + リノベーション/フルリフォーム済: +15%
+     *   + 直近5年内の大規模修繕: +10%
+     *   + 直近15年内の大規模修繕: +5%
+     *   + 修繕回数が築年数に対し標準以上(15年に1回): +3%
+     *   + 長期修繕計画策定済み: +3%
+     *   - 臨海・湾岸エリア(塩害): -5%
+     *   - 旧耐震相当(1981年以前) かつ 大規模修繕履歴なし: -10%
+     *   - 自主管理: -3%
+     *   - 築30年超で修繕履歴不明: -5%
+     * クランプ範囲: 0.80 〜 1.20
+     */
+    function computeMaintenanceFactor(prop, age) {
+        var factor = 1.0;
+        var parts = [];
+        var notes = [];
+
+        var bikou = (prop['備考'] || '') + ' ' + (prop['物件名'] || '');
+        if (/(リノベーション|フルリフォーム|全面改装|全面リフォーム|内装一新)/.test(bikou)) {
+            factor += 0.15; parts.push('リノベ済+15%');
+        } else if (/(リフォーム済|改装済)/.test(bikou)) {
+            factor += 0.05; parts.push('リフォーム済+5%');
+        }
+
+        var lastRepair = parseFloat(prop['大規模修繕直近年']);
+        var nowY = new Date().getFullYear();
+        if (!isNaN(lastRepair) && lastRepair > 0) {
+            var ys = nowY - lastRepair;
+            if (ys <= 5) { factor += 0.10; parts.push('大規模修繕直近+10%'); }
+            else if (ys <= 15) { factor += 0.05; parts.push('大規模修繕履歴+5%'); }
+        }
+
+        var repairCount = parseFloat(prop['大規模修繕実施回数']);
+        if (!isNaN(repairCount) && age && repairCount >= Math.floor(age / 15)) {
+            factor += 0.03; parts.push('修繕回数標準以上+3%');
+        }
+
+        if (prop['長期修繕計画'] === 'yes') {
+            factor += 0.03; parts.push('長計策定+3%');
+        }
+
+        var loc = prop['所在地'] || '';
+        if (/(臨海|湾岸|沿岸|浦安|港南|江東区|品川区東品川|豊洲|勝どき|晴海|芝浦|海岸|東雲|有明)/.test(loc)) {
+            factor -= 0.05; parts.push('塩害エリア-5%');
+        }
+
+        if (age !== null) {
+            var builtYear = nowY - age;
+            if (builtYear < 1981 && (isNaN(lastRepair) || !lastRepair)) {
+                factor -= 0.10; parts.push('旧耐震かつ修繕不明-10%');
+            }
+            if (age > 30 && (isNaN(repairCount) || repairCount === 0) && (isNaN(lastRepair) || !lastRepair)) {
+                factor -= 0.05; parts.push('築30年超修繕不明-5%');
+            }
+        }
+
+        if (prop['管理形態'] === '自主管理') {
+            factor -= 0.03; parts.push('自主管理-3%');
+        }
+
+        if (factor < 0.80) factor = 0.80;
+        if (factor > 1.20) factor = 1.20;
+
+        return {
+            factor: factor,
+            label: parts.length ? parts.join(',') : '標準',
+            notes: notes
+        };
+    }
+
     function evaluate(prop, lpOverride) {
         var price = parseFloat(prop['価格(万円)']) || 0;
         var landArea = parseFloat(prop['土地面積(㎡)']) || 0;
@@ -172,15 +252,17 @@ var Appraisal = (function() {
         var age = calcAge(prop['築年月'] || '');
         var bldgValue = 0;
         var bldgNote = '';
+        var maint = computeMaintenanceFactor(prop, age);
         if (evalBuilding && st && bldgArea > 0 && age !== null) {
             var unit = RECONSTRUCTION[st];
             var life = LEGAL_LIFE[st];
             var remain = Math.max(0, life - age);
-            bldgValue = bldgArea * unit * (remain / life);
-            bldgNote = st + ' 残' + remain + '/' + life + '年';
+            var base = bldgArea * unit * (remain / life);
+            bldgValue = base * maint.factor;
+            bldgNote = st + ' 残' + remain + '/' + life + '年' + (maint.factor !== 1.0 ? ' ×' + maint.factor.toFixed(2) + '(' + maint.label + ')' : '');
         } else if (evalBuilding && st && bldgArea > 0) {
-            bldgValue = bldgArea * RECONSTRUCTION[st] * 0.5;
-            bldgNote = st + '(築年不明・50%)';
+            bldgValue = bldgArea * RECONSTRUCTION[st] * 0.5 * maint.factor;
+            bldgNote = st + '(築年不明・50%)' + (maint.factor !== 1.0 ? ' ×' + maint.factor.toFixed(2) : '');
         }
 
         var total = landValue + bldgValue;
@@ -195,7 +277,9 @@ var Appraisal = (function() {
             ratioPct: Math.round(ratio * 100),
             pricePerSqm: lp.pricePerSqm,
             priceSource: lp.source,
-            buildingNote: bldgNote
+            buildingNote: bldgNote,
+            maintenanceFactor: maint.factor,
+            maintenanceLabel: maint.label
         };
     }
 
@@ -217,7 +301,23 @@ var Appraisal = (function() {
         else if (cat === 'tenant') { opexRate = 0.15; vacancyRate = 0.12; } // 事業用は空室リスク高
 
         var grossAnnual = price * yld / 100;
-        var noi = grossAnnual * (1 - opexRate - vacancyRate);
+        var noi;
+        var noiNote = '';
+        // 区分マンションで実数値入力がある場合は実費ベースで計算
+        var kanri = parseFloat(prop['管理費(円/月)']) || 0;
+        var shuzen = parseFloat(prop['修繕積立金(円/月)']) || 0;
+        if (cat === 'condo' && (kanri > 0 || shuzen > 0)) {
+            // 円/月 → 万円/年
+            var annualOpexMan = (kanri + shuzen) * 12 / 10000;
+            // 固都税概算: 価格 × 0.4%
+            var zei = price * 0.004;
+            // 空室損失は残す
+            var effectiveGross = grossAnnual * (1 - vacancyRate);
+            noi = effectiveGross - annualOpexMan - zei;
+            noiNote = '実費(管理費+修繕積立+固都税概算)控除';
+        } else {
+            noi = grossAnnual * (1 - opexRate - vacancyRate);
+        }
         var capRate = getCapRate(prop['所在地'] || '');
         var catAdjust = (typeof CategoryLogic !== 'undefined') ? (CategoryLogic.CAP_ADJUST[cat] || 1.0) : 1.0;
         capRate = capRate * catAdjust;
@@ -231,7 +331,8 @@ var Appraisal = (function() {
             vacancyRate: vacancyRate,
             incomeValue: Math.round(incomeValue),
             ratio: ratio,
-            ratioPct: Math.round(ratio * 100)
+            ratioPct: Math.round(ratio * 100),
+            noiNote: noiNote
         };
     }
 

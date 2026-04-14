@@ -255,6 +255,9 @@
         document.getElementById('btn-export-pdf').addEventListener('click', function() {
             exportPDF();
         });
+        document.getElementById('btn-export-bank').addEventListener('click', function() {
+            exportBankReport();
+        });
         document.getElementById('btn-save-history').addEventListener('click', saveToHistory);
         document.getElementById('btn-open-history').addEventListener('click', openHistoryModal);
         document.getElementById('btn-history-close').addEventListener('click', function() {
@@ -264,6 +267,18 @@
         document.getElementById('btn-compare-close').addEventListener('click', function() {
             document.getElementById('compare-modal').style.display = 'none';
         });
+
+        // カテゴリ変更で区分マンションパネルを表示/非表示
+        var catRadios = document.querySelectorAll('input[name="category"]');
+        var togglePanel = function() {
+            var sel = document.querySelector('input[name="category"]:checked');
+            var panel = document.getElementById('condo-panel');
+            if (panel) panel.style.display = (sel && sel.value === 'condo') ? 'block' : 'none';
+        };
+        for (var ci = 0; ci < catRadios.length; ci++) {
+            catRadios[ci].addEventListener('change', togglePanel);
+        }
+        togglePanel();
 
         // テーブル切り替え
         document.getElementById('btn-table-view').addEventListener('click', function() {
@@ -325,6 +340,18 @@
             return;
         }
 
+        // 区分マンションの追加フィールドを各物件にマージ
+        var condoFields = collectCondoFields();
+        if (condoFields) {
+            parsed.forEach(function(p) {
+                for (var k in condoFields) {
+                    if (condoFields[k] !== '' && condoFields[k] !== null && p[k] === undefined) {
+                        p[k] = condoFields[k];
+                    }
+                }
+            });
+        }
+
         // スコアリング
         var scored = ReinsScorer.evaluateAll(parsed);
         analyzedProperties = scored;
@@ -336,6 +363,36 @@
         maybeEnrichWithReinfolib(scored);
         // 動的地価公示で積算評価を再計算
         maybeEnrichWithLandPrice(scored);
+    }
+
+    function collectCondoFields() {
+        var catEl = document.querySelector('input[name="category"]:checked');
+        if (!catEl || catEl.value !== 'condo') return null;
+        var g = function(id) {
+            var el = document.getElementById(id);
+            return el ? el.value.trim() : '';
+        };
+        var floor = g('condo-floor'); // "8/15"
+        var fld = {};
+        if (g('condo-kanri')) fld['管理費(円/月)'] = g('condo-kanri');
+        if (g('condo-shuzen')) fld['修繕積立金(円/月)'] = g('condo-shuzen');
+        if (g('condo-kikin')) fld['修繕積立金基金(円)'] = g('condo-kikin');
+        if (floor) {
+            var fm = floor.match(/(\d+)\s*\/\s*(\d+)/);
+            if (fm) { fld['所在階'] = fm[1]; fld['総階数'] = fm[2]; }
+            else { fld['所在階'] = floor.replace(/[^\d]/g, ''); }
+        }
+        if (g('condo-direction')) fld['向き'] = g('condo-direction');
+        if (g('condo-mgmt')) fld['管理形態'] = g('condo-mgmt');
+        if (g('condo-daishu-count')) fld['大規模修繕実施回数'] = g('condo-daishu-count');
+        if (g('condo-daishu-year')) fld['大規模修繕直近年'] = g('condo-daishu-year');
+        if (g('condo-plan')) fld['長期修繕計画'] = g('condo-plan');
+        if (g('condo-loan')) fld['管理組合借入金(万円)'] = g('condo-loan');
+        if (g('condo-reserve')) fld['積立金残高(万円)'] = g('condo-reserve');
+        if (g('condo-taino')) fld['滞納世帯率(%)'] = g('condo-taino');
+        if (g('condo-parking')) fld['駐車場権利'] = g('condo-parking');
+        if (g('condo-pet')) fld['ペット可否'] = g('condo-pet');
+        return fld;
     }
 
     function maybeEnrichWithLandPrice(props) {
@@ -453,6 +510,7 @@
         var sections = [
             { title: '積算評価', text: p['積算評価_説明'], cls: ratioClass(p['積算比(%)'], [100, 80, 60]) },
             { title: '収益還元評価', text: p['収益還元_説明'], cls: ratioClass(p['収益還元比(%)'], [110, 95, 80]) },
+            { title: '区分マンション健全性', text: p['区分健全性_説明'], cls: '' },
             { title: 'ハザードリスク', text: p['ハザード_説明'], cls: hazardClass(p) },
             { title: '融資適性', text: p['融資判定_説明'], cls: financingClass(p) },
             { title: '将来価値・出口戦略', text: p['将来価値_説明'], cls: fvClass(p['将来価値スコア']) },
@@ -1029,6 +1087,42 @@
                 });
         }
         processCard(0);
+    }
+
+    // ======== 銀行担保評価書PDF出力 ========
+    function exportBankReport() {
+        if (!analyzedProperties.length) {
+            showToast('解析結果がありません', 'warning');
+            return;
+        }
+        if (typeof BankReport === 'undefined') {
+            showToast('銀行評価モジュール未読込', 'error');
+            return;
+        }
+        // 複数物件の場合は選択、1件なら即出力
+        var target;
+        if (analyzedProperties.length === 1) {
+            target = analyzedProperties[0];
+        } else {
+            var options = analyzedProperties.map(function(p, i) {
+                return (i + 1) + ': ' + (p['物件名'] || p['所在地'] || '物件' + (i+1)) + '（' + (p['評価ランク'] || '') + '）';
+            }).join('\n');
+            var pick = prompt('銀行評価書を作成する物件番号を選んでください:\n\n' + options, '1');
+            if (pick === null) return;
+            var idx = parseInt(pick) - 1;
+            if (isNaN(idx) || idx < 0 || idx >= analyzedProperties.length) {
+                showToast('無効な番号です', 'warning');
+                return;
+            }
+            target = analyzedProperties[idx];
+        }
+        showToast('担保評価書を生成中...', 'info');
+        BankReport.exportPDF(target)
+            .then(function() { showToast('担保評価書を保存しました', 'success'); })
+            .catch(function(e) {
+                console.error(e);
+                showToast('生成失敗: ' + e.message, 'error');
+            });
     }
 
     // ======== 履歴保存 ========
