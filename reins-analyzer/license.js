@@ -160,6 +160,20 @@ var LicenseManager = (function() {
     }
 
     function loadLicense() {
+        // オーナーモード：ローカルホスト or フラグ保存済み
+        try {
+            var isOwnerHost = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+            var isOwnerFlag = localStorage.getItem('reins_owner_mode') === 'minatech';
+            if (isOwnerHost || isOwnerFlag) {
+                return {
+                    valid: true, plan: 'PRO', planName: 'オーナー',
+                    expiry: new Date(2099, 11, 31), expiryStr: '2099/12/31',
+                    companyCode: 'MNTH', daysLeft: 99999,
+                    features: PLAN_FEATURES.PRO,
+                    message: 'オーナー（全機能）'
+                };
+            }
+        } catch (e) {}
         var key = localStorage.getItem(STORAGE_KEY);
         if (!key) return null;
         return validateKey(key);

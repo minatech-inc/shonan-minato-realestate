@@ -76,9 +76,30 @@
                     <button id="btn-clear" class="btn btn-outline-danger">クリア</button>
                 </div>
             </div>
+
+            <div class="analysis-config">
+                <div class="config-group">
+                    <label class="config-label">物件カテゴリ</label>
+                    <div class="radio-group" id="category-group">
+                        <label><input type="radio" name="category" value="apartment" checked> 一棟収益</label>
+                        <label><input type="radio" name="category" value="condo"> 区分マンション</label>
+                        <label><input type="radio" name="category" value="house"> 戸建</label>
+                        <label><input type="radio" name="category" value="tenant"> テナント/事業用</label>
+                        <label><input type="radio" name="category" value="land"> 土地</label>
+                    </div>
+                </div>
+                <div class="config-group">
+                    <label class="config-label">分析モード</label>
+                    <div class="radio-group" id="mode-group">
+                        <label><input type="radio" name="mode" value="investment" checked> 投資（収益・融資重視）</label>
+                        <label><input type="radio" name="mode" value="enduser"> 実需（将来価値・出口重視）</label>
+                    </div>
+                </div>
+            </div>
             <div class="input-tabs">
                 <button class="tab active" data-tab="paste">テキスト貼り付け</button>
                 <button class="tab" data-tab="manual">手動入力</button>
+                <button class="tab" data-tab="pdf">PDF/マイソク</button>
             </div>
 
             <!-- テキスト貼り付けタブ -->
@@ -153,7 +174,80 @@
                     <button type="submit" class="btn btn-primary btn-lg">この物件を追加</button>
                 </form>
             </div>
+
+            <!-- PDF/マイソク取り込みタブ -->
+            <div id="tab-pdf" class="tab-content">
+                <div id="pdf-drop" class="pdf-drop">
+                    <div class="pdf-drop-icon">📄</div>
+                    <div class="pdf-drop-text">物件概要書（マイソク）PDF / 画像をドラッグ＆ドロップ</div>
+                    <div class="pdf-drop-sub">または下のボタンから選択（PDF・JPG・PNG 複数可）</div>
+                    <input type="file" id="pdf-file" accept=".pdf,image/*" multiple style="display:none;">
+                    <button type="button" id="btn-pdf-select" class="btn btn-primary">ファイルを選択</button>
+                </div>
+                <div class="pdf-options">
+                    <label class="pdf-option">
+                        <input type="checkbox" id="pdf-use-vision">
+                        <span>Vision AI併用（Claude Haiku／有料・1件約¥1）</span>
+                    </label>
+                    <button type="button" id="btn-pdf-settings" class="btn btn-outline btn-sm">API設定</button>
+                </div>
+                <div class="pdf-options">
+                    <label class="pdf-option">
+                        <input type="checkbox" id="use-reinfolib">
+                        <span>取引事例比較法（国交省不動産情報ライブラリ・無料登録制）</span>
+                    </label>
+                    <button type="button" id="btn-reinfolib-settings" class="btn btn-outline btn-sm">API設定</button>
+                </div>
+                <div id="pdf-progress" class="pdf-progress" style="display:none;">
+                    <div class="pdf-progress-bar"><div id="pdf-progress-fill"></div></div>
+                    <div id="pdf-progress-text" class="pdf-progress-text">準備中...</div>
+                </div>
+                <div id="pdf-log" class="pdf-log"></div>
+            </div>
         </section>
+
+        <!-- 不動産情報ライブラリAPI設定モーダル -->
+        <div id="reinfolib-settings-modal" class="license-modal" style="display:none;">
+            <div class="license-modal-content">
+                <h2>不動産情報ライブラリ API設定</h2>
+                <p class="license-modal-desc">
+                    国土交通省「不動産情報ライブラリ」の取引価格情報・地価公示APIを使って実取引価格・公示地価と比較します。<br>
+                    <strong>推奨: プロキシ経由</strong>（CORS回避＋APIキー秘匿）。プロキシURLを入力すればキーは不要です。<br>
+                    プロキシを立てない場合のみ、下の「APIキー直接入力」欄を使ってください（localStorageに平文保存）。<br>
+                    <a href="https://www.reinfolib.mlit.go.jp/help/apiManual/" target="_blank" rel="noopener">API利用登録はこちら</a>
+                </p>
+                <div class="license-input-wrap">
+                    <label style="font-size:12px;color:#666;">プロキシURL（推奨）</label>
+                    <input type="text" id="reinfolib-proxy-input" placeholder="https://reinfolib-proxy.xxx.workers.dev" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="license-input-wrap" style="margin-top:12px;">
+                    <label style="font-size:12px;color:#666;">APIキー直接入力（プロキシ未使用時のみ）</label>
+                    <input type="password" id="reinfolib-key-input" placeholder="Ocp-Apim-Subscription-Key" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="license-modal-footer" style="justify-content:flex-end;gap:12px;">
+                    <button id="btn-reinfolib-cancel" class="btn btn-outline">キャンセル</button>
+                    <button id="btn-reinfolib-save" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- API設定モーダル -->
+        <div id="pdf-settings-modal" class="license-modal" style="display:none;">
+            <div class="license-modal-content">
+                <h2>Vision API 設定</h2>
+                <p class="license-modal-desc">
+                    PDF/画像のOCRが失敗した際にClaude Haiku Vision APIへフォールバックします。<br>
+                    キーはこのブラウザのlocalStorageにのみ保存され、送信先はAnthropic APIのみです。
+                </p>
+                <div class="license-input-wrap">
+                    <input type="password" id="anthropic-key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+                </div>
+                <div class="license-modal-footer" style="justify-content:flex-end;gap:12px;">
+                    <button id="btn-pdf-settings-cancel" class="btn btn-outline">キャンセル</button>
+                    <button id="btn-pdf-settings-save" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
 
         <!-- 解析結果 -->
         <section id="results-section" class="results-section" style="display:none;">
@@ -163,6 +257,33 @@
                     <button id="btn-export-csv" class="btn btn-outline">CSV出力</button>
                     <button id="btn-export-excel" class="btn btn-outline">Excel出力</button>
                     <button id="btn-export-json" class="btn btn-outline">JSON出力</button>
+                    <button id="btn-export-pdf" class="btn btn-outline">PDFレポート</button>
+                    <button id="btn-save-history" class="btn btn-outline">履歴に保存</button>
+                    <button id="btn-open-history" class="btn btn-outline">履歴/比較</button>
+                </div>
+            </div>
+
+            <!-- 履歴モーダル -->
+            <div id="history-modal" class="license-modal" style="display:none;">
+                <div class="license-modal-content" style="max-width:720px;">
+                    <h2>解析履歴</h2>
+                    <p class="license-note">保存済みの解析を読み込む、または2件選択して比較できます。</p>
+                    <div id="history-list" style="max-height:420px;overflow:auto;margin:16px 0;"></div>
+                    <div class="license-actions">
+                        <button id="btn-history-compare" class="btn btn-primary">選択した2件を比較</button>
+                        <button id="btn-history-close" class="btn btn-outline">閉じる</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 比較モーダル -->
+            <div id="compare-modal" class="license-modal" style="display:none;">
+                <div class="license-modal-content" style="max-width:960px;">
+                    <h2>物件比較</h2>
+                    <div id="compare-body" style="max-height:520px;overflow:auto;margin:16px 0;"></div>
+                    <div class="license-actions">
+                        <button id="btn-compare-close" class="btn btn-outline">閉じる</button>
+                    </div>
                 </div>
             </div>
 
@@ -232,15 +353,28 @@
             <p class="footer-legal">
                 本ツールはレインズの自動アクセス・スクレイピングを一切行いません。<br>
                 ユーザーが手動でコピーしたテキストをローカルで解析するのみです。<br>
-                データは外部サーバーに送信されません（全処理がブラウザ内で完結）。
+                通常処理は全てブラウザ内で完結します。<br>
+                ※Vision AI併用ONの場合のみ、OCR失敗時にAnthropic APIへ画像を送信します（任意・デフォルトOFF）。
             </p>
             <p class="footer-copy">&copy; MinaTech株式会社 All Rights Reserved.</p>
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
     <script src="license.js"></script>
     <script src="parser.js"></script>
+    <script src="category.js"></script>
+    <script src="market.js"></script>
+    <script src="landprice.js"></script>
+    <script src="appraisal.js"></script>
+    <script src="hazard.js"></script>
+    <script src="explanation.js"></script>
     <script src="scorer.js"></script>
+    <script src="history.js"></script>
     <script src="app.js"></script>
+    <script src="pdf-analyzer.js"></script>
 </body>
 </html>

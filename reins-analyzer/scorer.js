@@ -122,6 +122,11 @@ var ReinsScorer = (function() {
      * @returns {Object} スコアリング結果
      */
     function evaluate(prop) {
+        var cat = (typeof CategoryLogic !== 'undefined') ? CategoryLogic.get().category : 'apartment';
+        var mode = (typeof CategoryLogic !== 'undefined') ? CategoryLogic.get().mode : 'investment';
+        prop['カテゴリ'] = (typeof CategoryLogic !== 'undefined') ? CategoryLogic.LABEL[cat] : '一棟収益';
+        prop['分析モード'] = mode === 'enduser' ? '実需' : '投資';
+
         var price = parseFloat(prop['価格(万円)']) || 9999;
         var yld = parseFloat(prop['表面利回り(%)']) || 0;
         var station = extractStationMinutes(prop['駅徒歩(分)']);
@@ -215,6 +220,80 @@ var ReinsScorer = (function() {
             reasons.push('再建築不可(-3)');
         }
 
+        // === 積算評価（Phase A） ===
+        var appraisal = null;
+        if (typeof Appraisal !== 'undefined' && cat !== 'land') {
+            appraisal = Appraisal.evaluate(prop);
+            if (appraisal) {
+                var adj = Appraisal.scoreAdjust(appraisal.ratio);
+                score += adj.delta;
+                reasons.push(adj.reason);
+                prop['積算価格(万円)'] = appraisal.totalValue;
+                prop['土地積算(万円)'] = appraisal.landValue;
+                prop['建物積算(万円)'] = appraisal.buildingValue;
+                prop['積算比(%)'] = appraisal.ratioPct;
+                prop['土地単価(万円/㎡)'] = appraisal.pricePerSqm;
+                prop['地価出典'] = appraisal.priceSource;
+            }
+
+            // === 収益還元（Phase B） ===
+            var income = Appraisal.evaluateIncome(prop);
+            if (income) {
+                var iadj = Appraisal.incomeScoreAdjust(income.ratio);
+                score += iadj.delta;
+                reasons.push(iadj.reason);
+                prop['NOI(万円/年)'] = income.noi;
+                prop['還元利回り(%)'] = income.capRate;
+                prop['収益還元価格(万円)'] = income.incomeValue;
+                prop['収益還元比(%)'] = income.ratioPct;
+            }
+
+            // === 融資適性判定 ===
+            var fin = Appraisal.evaluateFinancing(prop, appraisal, income);
+            if (fin) {
+                prop['融資判定'] = fin.verdict;
+                prop['想定融資期間(年)'] = fin.loanYears;
+                prop['想定LTV(%)'] = fin.ltv;
+                prop['想定融資額(万円)'] = fin.loanAmount;
+                prop['想定年間返済(万円)'] = fin.annualPayment;
+                if (fin.dscr !== null) prop['DSCR'] = fin.dscr;
+                prop['__financing'] = fin;
+            }
+        }
+
+        // === ハザード評価（Phase B） ===
+        if (typeof HazardCheck !== 'undefined') {
+            var hz = HazardCheck.evaluate(prop);
+            if (hz) {
+                score += hz.delta;
+                if (hz.delta !== 0) reasons.push(hz.reason);
+                prop['ハザード津波'] = hz.tsunami;
+                prop['ハザード洪水'] = hz.flood;
+                prop['ハザード土砂'] = hz.landslide;
+                prop['ハザード備考'] = hz.note;
+            }
+        }
+
+        // === 用途地域・接道（Phase B） ===
+        var zoning = prop['用途地域'] || '';
+        var road = prop['接道'] || '';
+        if (zoning.indexOf('商業') >= 0) {
+            score += 1; reasons.push('商業地域(+1)');
+        } else if (zoning.indexOf('近隣商業') >= 0) {
+            score += 1; reasons.push('近隣商業(+1)');
+        } else if (zoning.indexOf('市街化調整') >= 0) {
+            score -= 2; reasons.push('市街化調整区域(-2)');
+        }
+        // 接道2m未満・幅員4m未満
+        var roadWidthM = road.match(/幅員?\s*([\d.]+)\s*m/);
+        if (roadWidthM && parseFloat(roadWidthM[1]) < 4) {
+            score -= 1; reasons.push('幅員' + roadWidthM[1] + 'm(要セットバック)');
+        }
+        var roadTouchM = road.match(/接道\s*([\d.]+)\s*m/) || road.match(/間口\s*([\d.]+)\s*m/);
+        if (roadTouchM && parseFloat(roadTouchM[1]) < 2) {
+            score -= 2; reasons.push('接道<2m(再建築困難)');
+        }
+
         // === 実質利回りチェック ===
         if (yld > 0 && price > 0) {
             var netYield = yld * 0.75; // 概算: 表面の75%
@@ -225,14 +304,32 @@ var ReinsScorer = (function() {
             prop['実質利回り概算(%)'] = netYield.toFixed(1);
         }
 
+        // === 将来価値スコア（実需モードで重視） ===
+        if (typeof MarketData !== 'undefined') {
+            var fv = MarketData.futureValueScore(prop);
+            prop['将来価値スコア'] = fv.score;
+            prop['人口推計2050(%)'] = fv.popChange;
+            prop['ブランド指数'] = fv.brand;
+            if (mode === 'enduser') {
+                // 実需モードでは将来価値を主軸に加算（投資系減点は維持）
+                score = Math.round(fv.score * 1.2);
+                reasons = fv.reasons.slice();
+                // ハザードと融資は実需でも参考
+                reasons.push('（実需モード: 将来価値重視）');
+            } else {
+                // 投資モードでは参考程度（最大+1）
+                if (fv.score >= 8) { score += 1; reasons.push('将来価値高(' + fv.score + '/10)'); }
+            }
+        }
+
         // スコアは0以下にしない
         if (score < 0) score = 0;
 
-        // ランク判定
+        // ランク判定（Phase B統合で最大約15点）
         var rank, priority, risk;
-        if (score >= 7) {
+        if (score >= 11) {
             rank = 'S'; priority = 'S(即日)'; risk = '低';
-        } else if (score >= 5) {
+        } else if (score >= 7) {
             rank = 'A'; priority = 'A(今週)'; risk = '中低';
         } else if (score >= 3) {
             rank = 'B'; priority = 'B(今月)'; risk = '中';
@@ -273,6 +370,17 @@ var ReinsScorer = (function() {
             prop['判断根拠'] = result.reasons.join(' / ');
             if (result.netYield) prop['実質利回り概算(%)'] = result.netYield;
             if (result.buildingAge !== null) prop['築年数'] = result.buildingAge;
+
+            // 詳細説明文を生成（HTML表示・エクスポート両対応）
+            if (typeof Explanation !== 'undefined') {
+                prop['積算評価_説明'] = Explanation.appraisal(prop);
+                prop['収益還元_説明'] = Explanation.income(prop);
+                prop['ハザード_説明'] = Explanation.hazard(prop);
+                prop['融資判定_説明'] = Explanation.financing(prop);
+                prop['将来価値_説明'] = Explanation.futureValue(prop);
+                prop['総合判定_説明'] = Explanation.overall(prop);
+                prop['詳細分析レポート'] = Explanation.buildAll(prop);
+            }
 
             results.push(prop);
         }

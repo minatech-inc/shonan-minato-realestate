@@ -718,6 +718,139 @@ body {
     opacity: 0.6;
 }
 
+/* ======== 積算・収益還元・ハザード詳細 ======== */
+.prop-detail {
+    margin: 12px 0;
+    padding: 12px 14px;
+    background: #f7f6f1;
+    border-left: 3px solid #c9a96e;
+    border-radius: 4px;
+    font-size: 13px;
+}
+.detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e5e5e0;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label {
+    flex: 0 0 80px;
+    font-weight: 600;
+    color: #0a2540;
+    padding-top: 2px;
+}
+.detail-value { flex: 1; color: #333; display: flex; flex-direction: column; gap: 3px; }
+.detail-value small { color: #888; font-weight: 400; font-size: 11.5px; line-height: 1.5; }
+.detail-value small.detail-theory { color: #5a6775; font-style: normal; padding-left: 10px; border-left: 2px solid #d4c299; }
+.detail-ratio {
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: #0a2540;
+    padding: 2px 10px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #d4d4cc;
+}
+.detail-row.detail-good .detail-ratio { color: #137752; border-color: #137752; background: #e8f5ef; }
+.detail-row.detail-bad .detail-ratio { color: #c0392b; border-color: #c0392b; background: #fbeae6; }
+.detail-row.detail-good .detail-label { color: #137752; }
+.detail-row.detail-bad .detail-label { color: #c0392b; }
+.detail-row.detail-warn .detail-label { color: #a15c00; }
+
+/* ======== カテゴリ/モードセレクター ======== */
+.analysis-config {
+    display: flex;
+    gap: 20px;
+    padding: 14px 16px;
+    background: #faf8f2;
+    border: 1px solid #e3e1d8;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.config-group { flex: 1; min-width: 280px; }
+.config-label { display: block; font-size: 12px; font-weight: 600; color: #0a2540; margin-bottom: 6px; }
+.radio-group { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.radio-group label {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 13px; cursor: pointer; color: #333;
+    padding: 4px 10px; border-radius: 16px; border: 1px solid #d4d4cc; background: #fff;
+}
+.radio-group label:has(input:checked) { background: #0a2540; color: #fff; border-color: #0a2540; }
+.radio-group input { cursor: pointer; }
+
+/* ======== 詳細レポート（自然文説明） ======== */
+.prop-report { margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+.report-section {
+    background: #fff;
+    border: 1px solid #e3e1d8;
+    border-left: 4px solid #c9a96e;
+    border-radius: 6px;
+    padding: 0;
+    overflow: hidden;
+}
+.report-section summary {
+    padding: 10px 14px;
+    font-weight: 600;
+    color: #0a2540;
+    cursor: pointer;
+    background: #faf8f2;
+    list-style: none;
+    user-select: none;
+}
+.report-section summary::-webkit-details-marker { display: none; }
+.report-section summary::before { content: '▼ '; font-size: 10px; color: #c9a96e; margin-right: 4px; }
+.report-section:not([open]) summary::before { content: '▶ '; }
+.report-body {
+    padding: 12px 16px 14px 16px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: #2c3e50;
+    background: #fff;
+}
+.report-section.sec-good { border-left-color: #137752; }
+.report-section.sec-good summary { background: #e8f5ef; color: #137752; }
+.report-section.sec-warn { border-left-color: #a15c00; }
+.report-section.sec-warn summary { background: #fff7e8; color: #a15c00; }
+.report-section.sec-bad { border-left-color: #c0392b; }
+.report-section.sec-bad summary { background: #fbeae6; color: #c0392b; }
+
+/* ======== PDF取り込み ======== */
+.pdf-drop {
+    border: 2px dashed #c9a96e;
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    background: #fafaf7;
+    transition: background 0.2s, border-color 0.2s;
+    cursor: pointer;
+}
+.pdf-drop.dragover { background: #fff7e4; border-color: #0a2540; }
+.pdf-drop-icon { font-size: 48px; margin-bottom: 12px; }
+.pdf-drop-text { font-size: 16px; font-weight: 600; color: #0a2540; margin-bottom: 6px; }
+.pdf-drop-sub { font-size: 13px; color: #666; margin-bottom: 18px; }
+.pdf-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #f5f5f0;
+    border-radius: 8px;
+}
+.pdf-option { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #0a2540; cursor: pointer; }
+.pdf-progress { margin-top: 16px; }
+.pdf-progress-bar { width: 100%; height: 8px; background: #e5e5e0; border-radius: 4px; overflow: hidden; }
+#pdf-progress-fill { height: 100%; background: linear-gradient(90deg, #c9a96e, #0a2540); width: 0%; transition: width 0.3s; }
+.pdf-progress-text { margin-top: 8px; font-size: 13px; color: #555; text-align: center; }
+.pdf-log { margin-top: 12px; font-size: 12px; color: #666; max-height: 180px; overflow-y: auto; }
+.pdf-log div { padding: 4px 0; border-bottom: 1px solid #eee; }
+.pdf-log .log-ok { color: #137752; }
+.pdf-log .log-warn { color: #a15c00; }
+.pdf-log .log-err { color: #c0392b; }
+
 /* ======== レスポンシブ ======== */
 @media (max-width: 768px) {
     .steps { flex-direction: column; gap: 6px; padding: 16px; }
