@@ -160,9 +160,15 @@ var LicenseManager = (function() {
     }
 
     function loadLicense() {
-        // オーナーモード：ローカルホスト or フラグ保存済み
+        // オーナーモード：ローカルホスト / 公式ドメイン / URLパラメータ / 保存フラグ
         try {
-            var isOwnerHost = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+            var host = location.hostname || '';
+            var isOwnerHost = host === '127.0.0.1' || host === 'localhost' ||
+                host === 'minatech-inc.github.io' || host.indexOf('minatech1210.com') >= 0;
+            // ?owner=minatech をURLに付けると恒久有効化
+            if (location.search.indexOf('owner=minatech') >= 0) {
+                try { localStorage.setItem('reins_owner_mode', 'minatech'); } catch (e) {}
+            }
             var isOwnerFlag = localStorage.getItem('reins_owner_mode') === 'minatech';
             if (isOwnerHost || isOwnerFlag) {
                 return {
