@@ -114,8 +114,20 @@
         var isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
         if (isPdf) {
             return extractPdf(file).then(function(text) {
-                if (text && text.replace(/\s/g,'').length >= MIN_TEXT_CHARS) return text;
-                log(file.name + ' → ネイティブ抽出が少ないためOCRへ', 'warn');
+                var cleanLen = text ? text.replace(/\s/g,'').length : 0;
+                // U+FFFD (置換文字) 比率チェック: サブセットフォントで ToUnicode 欠落PDF対策
+                var replacementRatio = 0;
+                if (cleanLen > 0) {
+                    var replacements = (text.match(/\uFFFD/g) || []).length;
+                    replacementRatio = replacements / cleanLen;
+                }
+                var extractOK = cleanLen >= MIN_TEXT_CHARS && replacementRatio < 0.05;
+                if (extractOK) return text;
+                if (replacementRatio >= 0.05) {
+                    log(file.name + ' → 文字化け率 ' + Math.round(replacementRatio * 100) + '%（カスタムフォント）のためOCRへ', 'warn');
+                } else {
+                    log(file.name + ' → ネイティブ抽出が少ないためOCRへ', 'warn');
+                }
                 return rasterizePdf(file).then(function(images) {
                     return ocrImages(images, file.name);
                 });
