@@ -115,18 +115,31 @@
         if (isPdf) {
             return extractPdf(file).then(function(text) {
                 var cleanLen = text ? text.replace(/\s/g,'').length : 0;
-                // U+FFFD (置換文字) 比率チェック: サブセットフォントで ToUnicode 欠落PDF対策
-                var replacementRatio = 0;
-                if (cleanLen > 0) {
-                    var replacements = (text.match(/\uFFFD/g) || []).length;
-                    replacementRatio = replacements / cleanLen;
+                var replacements = text ? (text.match(/\uFFFD/g) || []).length : 0;
+                var validChars = cleanLen - replacements;
+                var replacementRatio = cleanLen > 0 ? replacements / cleanLen : 0;
+
+                // 判定ロジック:
+                //   - 有効文字(FFFD以外)が300文字以上あればネイティブ抽出を信頼（多少の文字化けは許容）
+                //   - 文字化け率30%以上かつ有効文字が少ない場合のみOCRへフォールバック
+                //   - 抽出文字数がMIN_TEXT_CHARS未満も OCR フォールバック
+                var hasEnoughValid = validChars >= 300;
+                var tooManyReplacements = replacementRatio >= 0.30;
+                var tooLittleText = cleanLen < MIN_TEXT_CHARS;
+
+                if (hasEnoughValid && !tooManyReplacements) {
+                    if (replacements > 0) {
+                        log(file.name + ' → ネイティブ抽出OK（文字化け' + replacements + '文字は許容範囲）', 'ok');
+                    }
+                    return text;
                 }
-                var extractOK = cleanLen >= MIN_TEXT_CHARS && replacementRatio < 0.05;
-                if (extractOK) return text;
-                if (replacementRatio >= 0.05) {
+
+                if (tooManyReplacements) {
                     log(file.name + ' → 文字化け率 ' + Math.round(replacementRatio * 100) + '%（カスタムフォント）のためOCRへ', 'warn');
-                } else {
+                } else if (tooLittleText) {
                     log(file.name + ' → ネイティブ抽出が少ないためOCRへ', 'warn');
+                } else {
+                    log(file.name + ' → 有効文字数不足のためOCRへ', 'warn');
                 }
                 return rasterizePdf(file).then(function(images) {
                     return ocrImages(images, file.name);
