@@ -11,6 +11,19 @@
     var ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
     var ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001';
     var MIN_TEXT_CHARS = 80;
+    // pdf.js CMap/標準フォント: CJK CID フォントをUnicodeへ正しくマッピングするために必須
+    var PDFJS_VER = '3.11.174';
+    var PDFJS_CMAP_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + PDFJS_VER + '/cmaps/';
+    var PDFJS_FONTS_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + PDFJS_VER + '/standard_fonts/';
+
+    function pdfLoadOptions(buf) {
+        return {
+            data: buf,
+            cMapUrl: PDFJS_CMAP_URL,
+            cMapPacked: true,
+            standardFontDataUrl: PDFJS_FONTS_URL
+        };
+    }
 
     var els = {};
     var tesseractLoading = null;
@@ -154,7 +167,7 @@
     function extractPdf(file) {
         if (!window.pdfjsLib) return Promise.reject(new Error('pdf.js未ロード'));
         return file.arrayBuffer().then(function(buf) {
-            return pdfjsLib.getDocument({ data: buf }).promise;
+            return pdfjsLib.getDocument(pdfLoadOptions(buf)).promise;
         }).then(function(pdf) {
             var parts = [];
             var chain = Promise.resolve();
@@ -175,7 +188,7 @@
 
     function rasterizePdf(file) {
         return file.arrayBuffer().then(function(buf) {
-            return pdfjsLib.getDocument({ data: buf }).promise;
+            return pdfjsLib.getDocument(pdfLoadOptions(buf)).promise;
         }).then(function(pdf) {
             var images = [];
             var chain = Promise.resolve();
