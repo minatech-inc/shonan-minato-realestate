@@ -168,19 +168,99 @@ var ReinsParser = (function() {
         return results.length > 0 ? results : [text];
     }
 
+    // 市区町村 → 都道府県 の推定テーブル（マイソクで県名省略されても解決できるように）
+    // 重複する市名（例: 府中市 = 東京都 / 広島県）は「省略時に想定される代表」を採用
+    var CITY_TO_PREF = {
+        // 神奈川県
+        '横浜市': '神奈川県', '川崎市': '神奈川県', '相模原市': '神奈川県',
+        '横須賀市': '神奈川県', '平塚市': '神奈川県', '鎌倉市': '神奈川県',
+        '藤沢市': '神奈川県', '小田原市': '神奈川県', '茅ヶ崎市': '神奈川県',
+        '茅ケ崎市': '神奈川県', '逗子市': '神奈川県', '三浦市': '神奈川県',
+        '秦野市': '神奈川県', '厚木市': '神奈川県', '大和市': '神奈川県',
+        '伊勢原市': '神奈川県', '海老名市': '神奈川県', '座間市': '神奈川県',
+        '南足柄市': '神奈川県', '綾瀬市': '神奈川県',
+        // 東京都（23区は「〇〇区」単体で東京都と推定）
+        '千代田区': '東京都', '中央区': '東京都', '港区': '東京都', '新宿区': '東京都',
+        '文京区': '東京都', '台東区': '東京都', '墨田区': '東京都', '江東区': '東京都',
+        '品川区': '東京都', '目黒区': '東京都', '大田区': '東京都', '世田谷区': '東京都',
+        '渋谷区': '東京都', '中野区': '東京都', '杉並区': '東京都', '豊島区': '東京都',
+        '北区': '東京都', '荒川区': '東京都', '板橋区': '東京都', '練馬区': '東京都',
+        '足立区': '東京都', '葛飾区': '東京都', '江戸川区': '東京都',
+        '八王子市': '東京都', '立川市': '東京都', '武蔵野市': '東京都', '三鷹市': '東京都',
+        '町田市': '東京都', '調布市': '東京都', '小金井市': '東京都', '小平市': '東京都',
+        '日野市': '東京都', '府中市': '東京都', '昭島市': '東京都', '国分寺市': '東京都',
+        // 埼玉県
+        'さいたま市': '埼玉県', '川口市': '埼玉県', '所沢市': '埼玉県', '越谷市': '埼玉県',
+        '草加市': '埼玉県', '春日部市': '埼玉県', '上尾市': '埼玉県',
+        // 千葉県
+        '千葉市': '千葉県', '船橋市': '千葉県', '松戸市': '千葉県', '市川市': '千葉県',
+        '柏市': '千葉県', '浦安市': '千葉県', '習志野市': '千葉県',
+        // 主要政令指定都市
+        '大阪市': '大阪府', '堺市': '大阪府',
+        '名古屋市': '愛知県',
+        '京都市': '京都府',
+        '神戸市': '兵庫県',
+        '福岡市': '福岡県', '北九州市': '福岡県',
+        '札幌市': '北海道',
+        '仙台市': '宮城県',
+        '広島市': '広島県'
+    };
+
+    function inferPrefecture(cityToken) {
+        if (!cityToken) return null;
+        for (var city in CITY_TO_PREF) {
+            if (cityToken.indexOf(city) === 0) return CITY_TO_PREF[city];
+        }
+        return null;
+    }
+
+    // 業者ブロック判定: 直前の数行に「取引態様」「取扱」「媒介」「免許」「代理」などが出現していたら業者情報とみなす
+    var BROKER_MARKERS = /取引態様|取扱(?:会社|店|業者)?|媒介|代理|免許|宅地建物取引業|建設業者免許|２級建築士|2級建築士/;
+    // 業者ブロック解除のシグナル（物件側情報へ戻ったとみなす）
+    var BROKER_RESET = /所在|物件|間取|価格|面積|利回|駅|築年|構造|建築年/;
+
     /**
      * 単一物件テキストのパース
      */
     function parseSingleProperty(text) {
         var data = {};
-        var lines = text.split('\n');
+        // 1行に ■ラベル／値 が複数連結されているマイソク対応: ■ で行分割
+        var rawLines = text.split('\n');
+        var lines = [];
+        for (var li = 0; li < rawLines.length; li++) {
+            var rl = rawLines[li];
+            // 複数の ■ を含む行は ■ で分割（先頭の ■ はそのまま残す）
+            if ((rl.match(/■/g) || []).length >= 2) {
+                var segs = rl.split('■').filter(function(s) { return s.trim(); });
+                segs.forEach(function(s) { lines.push('■' + s); });
+            } else {
+                lines.push(rl);
+            }
+        }
+        var inBrokerBlock = false;
+        var brokerBlockLinesLeft = 0;
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i].trim();
             if (!line) continue;
 
-            // パターン1: 「ラベル: 値」「ラベル　値」
-            var match = line.match(/^([^:：\t]{1,20})\s*[:：\t]\s*(.+)$/);
+            // 業者ブロック判定: 「取引態様」等を含む行を見つけたら以降5行は業者情報の可能性が高い
+            // ただし物件関連キーワードを含む行で即解除
+            if (BROKER_MARKERS.test(line)) {
+                inBrokerBlock = true;
+                brokerBlockLinesLeft = 8;
+            } else if (inBrokerBlock) {
+                brokerBlockLinesLeft--;
+                if (brokerBlockLinesLeft <= 0 || BROKER_RESET.test(line)) {
+                    inBrokerBlock = false;
+                }
+            }
+
+            // 装飾記号（■●◆◎★※☆□◇）と「／/」をラベル区切りとして許可
+            var cleanLine = line.replace(/^[■●◆◎★※☆□◇・]+\s*/, '');
+
+            // パターン1: 「ラベル: 値」「ラベル／値」「ラベル　値」
+            var match = cleanLine.match(/^([^:：\t／/]{1,20})\s*[:：\t／/]\s*(.+)$/);
             if (match) {
                 assignField(data, match[1].trim(), match[2].trim());
                 continue;
@@ -204,10 +284,23 @@ var ReinsParser = (function() {
                 data['駅徒歩(分)'] = stationMatch[1] + ' 徒歩' + stationMatch[2] + '分';
             }
 
-            // パターン5: 住所検出
-            var addrMatch = line.match(/((?:東京都|北海道|(?:京都|大阪)府|.{2,3}県).{2,}?(?:市|区|町|村|郡).+?)(?:\s|$)/);
-            if (addrMatch && !data['所在地']) {
-                data['所在地'] = addrMatch[1].trim();
+            // パターン5: 住所検出（業者ブロック内はスキップ、〒を含む行は業者住所として除外）
+            // 既に所在地が設定済みの場合は再設定しない（所在ラベルが最優先）
+            if (!data['所在地'] && !inBrokerBlock && !/〒\s*\d/.test(line)) {
+                // パターン5a: 都道府県プレフィックス付き
+                var addrMatch = line.match(/((?:東京都|北海道|(?:京都|大阪)府|.{2,3}県).{2,}?(?:市|区|町|村|郡).+?)(?:\s|$)/);
+                if (addrMatch) {
+                    data['所在地'] = addrMatch[1].trim();
+                } else {
+                    // パターン5b: 都道府県省略（例: "茅ヶ崎市松が丘2丁目..."）→ 市名から推定
+                    var cityMatch = line.match(/((?:さいたま|[^\s0-9]{1,8})(?:市|区))([^\s0-9]{1,6}?[\d０-９一二三四五六七八九十][^\s\(（]*)/);
+                    if (cityMatch) {
+                        var pref = inferPrefecture(cityMatch[1]);
+                        if (pref) {
+                            data['所在地'] = pref + cityMatch[1] + cityMatch[2];
+                        }
+                    }
+                }
             }
 
             // パターン6: 築年検出
@@ -295,6 +388,22 @@ var ReinsParser = (function() {
         if (normalizedLabel === '所在階') {
             var fM = value.match(/(\d+)\s*階/);
             if (fM) value = fM[1];
+        }
+
+        // 所在地: 都道府県が欠落している場合は市名から推定して補完
+        // 例: "茅ヶ崎市松が丘2丁目..." → "神奈川県茅ヶ崎市松が丘2丁目..."
+        if (normalizedLabel === '所在地') {
+            // 「（以下未定）」「（住居表示）」「（地番）」などの注釈を除去
+            var cleaned = value.replace(/（[^）]*）|\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+            // 先頭にすでに都道府県があるか
+            if (!/^(?:東京都|北海道|(?:京都|大阪)府|.{2,3}県)/.test(cleaned)) {
+                var m = cleaned.match(/^([^\s0-9０-９]{1,8}(?:市|区))/);
+                if (m) {
+                    var p = inferPrefecture(m[1]);
+                    if (p) cleaned = p + cleaned;
+                }
+            }
+            value = cleaned;
         }
 
         if (!data[normalizedLabel]) {
