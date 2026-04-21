@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /reins-analyzer/
+Disallow: /data/
+
+Sitemap: https://realestate.minatech1210.com/sitemap.xml

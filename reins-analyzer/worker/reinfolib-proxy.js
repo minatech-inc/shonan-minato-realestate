@@ -23,6 +23,10 @@
 const ALLOWED_ORIGINS = [
     'https://minatech1210.com',
     'https://www.minatech1210.com',
+    'https://realestate.minatech1210.com',
+    'https://web.minatech1210.com',
+    'https://sora.minatech1210.com',
+    'https://minatech-inc.github.io',
     'http://127.0.0.1:8765',
     'http://localhost:8765'
 ];
