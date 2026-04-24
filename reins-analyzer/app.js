@@ -363,6 +363,31 @@
         maybeEnrichWithReinfolib(scored);
         // 動的地価公示で積算評価を再計算
         maybeEnrichWithLandPrice(scored);
+        // reinfolib 空間API（ハザード・都市計画・生活環境・人口）でスコア補強
+        maybeEnhanceWithGeo(scored);
+    }
+
+    // reinfolib 空間API統合実行
+    function maybeEnhanceWithGeo(properties) {
+        if (typeof ReinsScorer === 'undefined' || !ReinsScorer.enhanceAllWithGeo) return;
+        if (!localStorage.getItem('reinfolib_proxy_url') &&
+            !localStorage.getItem('reinfolib_api_key')) return;
+        if (!properties || properties.length === 0) return;
+
+        showToast('空間API（ハザード/都市計画/生活環境）で詳細評価を開始...', 'info');
+        ReinsScorer.enhanceAllWithGeo(properties, function(idx, total, prop) {
+            // 進捗は控えめに（物件ごとにトースト出すとUX悪化するのでログのみ）
+            if (idx === 0 || idx === total - 1) {
+                console.log('[GEO] ' + (idx + 1) + '/' + total + ' ' + (prop['所在地'] || ''));
+            }
+        }).then(function() {
+            analyzedProperties = properties;
+            renderResults();
+            showToast('空間API解析完了（' + properties.length + '件）', 'success');
+        }).catch(function(err) {
+            console.error('空間API解析エラー:', err);
+            showToast('空間API解析で一部エラー: ' + err.message, 'warning');
+        });
     }
 
     function collectCondoFields() {

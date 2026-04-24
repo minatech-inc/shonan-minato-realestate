@@ -202,8 +202,76 @@ var Explanation = (function() {
         return lines.join('\n');
     }
 
+    // reinfolib 空間APIによるピンポイント評価（ハザード/都市計画/生活環境/将来人口）
+    function geoPinpoint(p) {
+        var lines = [];
+        var hz = p['__hazardGeo'];
+        var cp = p['__cityPlan'];
+        var am = p['__amenity'];
+        var pop = p['__population'];
+
+        if (!hz && !cp && !am && !pop) return '';
+
+        lines.push('【ピンポイント評価（国土交通省 空間API）】');
+        if (p['__geo']) {
+            lines.push('緯度経度: ' + p['__geo'].lat.toFixed(6) + ', ' + p['__geo'].lng.toFixed(6) +
+                '（国土地理院ジオコーディング: ' + (p['__geo'].matchedTitle || '') + '）');
+        }
+
+        if (hz && hz.hits && hz.hits.length > 0) {
+            lines.push('・ハザード評価: ' + hz.hits.map(function(h) { return h.label; }).join(' / '));
+            lines.push('  （合計 ' + (hz.totalDelta >= 0 ? '+' : '') + hz.totalDelta + '点）');
+        } else if (hz) {
+            lines.push('・ハザード評価: 洪水・高潮・津波・土砂災害・液状化等の想定区域に該当なし（基準点評価OK）');
+        }
+
+        if (cp && cp.hits && cp.hits.length > 0) {
+            lines.push('・都市計画評価: ' + cp.hits.map(function(h) { return h.label; }).join(' / '));
+            lines.push('  （合計 ' + (cp.totalDelta >= 0 ? '+' : '') + cp.totalDelta + '点）');
+        }
+
+        if (am) {
+            if (am.schoolDistrict.elementary) {
+                lines.push('・学区: ' + am.schoolDistrict.elementary +
+                    (am.schoolDistrict.junior ? ' / ' + am.schoolDistrict.junior : ''));
+            }
+            if (am.stationDaily) {
+                lines.push('・最寄駅乗降客数: ' + am.stationDaily.toLocaleString() + '人/日');
+            }
+            var amenityLabels = [];
+            for (var k in am.nearbyAmenities) {
+                var a = am.nearbyAmenities[k];
+                amenityLabels.push(k + '(' + a.nearest + 'm)');
+            }
+            if (amenityLabels.length) {
+                lines.push('・近隣施設: ' + amenityLabels.join(' / '));
+            }
+            if (am.inDID) lines.push('・人口集中地区（DID）内 → 市場流動性◎');
+            if (am.hits && am.hits.length) {
+                lines.push('  （生活環境合計 ' + (am.totalDelta >= 0 ? '+' : '') +
+                    (Math.round(am.totalDelta * 10) / 10) + '点）');
+            }
+        }
+
+        if (pop && pop.available) {
+            lines.push('・将来人口予測(2020→2040): ' +
+                pop.pop2020.toLocaleString() + '人 → ' + pop.pop2040.toLocaleString() +
+                '人（' + Math.round(pop.changeRatio * 100) + '%）');
+            if (pop.delta !== 0) {
+                lines.push('  ' + pop.label);
+            }
+        }
+
+        if (p['__geoError']) {
+            lines.push('・※ジオコーディング失敗: ' + p['__geoError'] + '（空間APIはスキップされました）');
+        }
+
+        return lines.join('\n');
+    }
+
     function buildAll(p) {
-        var parts = [appraisal(p), income(p), condoHealth(p), hazard(p), financing(p), futureValue(p), overall(p)];
+        var parts = [appraisal(p), income(p), condoHealth(p), hazard(p),
+                     geoPinpoint(p), financing(p), futureValue(p), overall(p)];
         if (p['取引事例_説明']) parts.push(p['取引事例_説明']);
         return parts.filter(function(s) { return s; }).join('\n\n');
     }
@@ -216,6 +284,7 @@ var Explanation = (function() {
         futureValue: futureValue,
         transactions: transactions,
         condoHealth: condoHealth,
+        geoPinpoint: geoPinpoint,
         overall: overall,
         buildAll: buildAll
     };

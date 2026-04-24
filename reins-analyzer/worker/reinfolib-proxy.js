@@ -31,7 +31,20 @@ const ALLOWED_ORIGINS = [
     'http://localhost:8765'
 ];
 
-const ALLOWED_ENDPOINTS = ['XIT001', 'XCT001', 'XCT002', 'XPT001'];
+// 採用している reinfolib エンドポイント一覧
+//  XIT001: 取引価格情報, XPT002: 地価公示・地価調査ポイント
+//  XKT001-030系: 都市計画/ハザード/生活環境等の国土数値情報
+//  XGT001: 指定緊急避難場所, XST001: 災害履歴
+//  XCT001/XCT002/XPT001 は後方互換のため残置
+const ALLOWED_ENDPOINTS = [
+    'XIT001', 'XPT002',
+    'XCT001', 'XCT002', 'XPT001',
+    'XKT001', 'XKT002', 'XKT003', 'XKT004', 'XKT005', 'XKT006', 'XKT007',
+    'XKT010', 'XKT011', 'XKT013', 'XKT014', 'XKT015', 'XKT016', 'XKT017',
+    'XKT018', 'XKT020', 'XKT021', 'XKT022', 'XKT023', 'XKT024', 'XKT025',
+    'XKT026', 'XKT027', 'XKT028', 'XKT029', 'XKT030', 'XKT031',
+    'XGT001', 'XST001'
+];
 
 export default {
     async fetch(request, env, ctx) {

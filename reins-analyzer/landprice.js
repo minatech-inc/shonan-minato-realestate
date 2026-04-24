@@ -1,11 +1,14 @@
 /**
  * 動的地価取得モジュール
- * 国交省 不動産情報ライブラリ API: XCT001（地価公示・地価調査）
+ * 国交省 不動産情報ライブラリ API: XPT002（地価公示・地価調査のポイント）
  * https://www.reinfolib.mlit.go.jp/help/apiManual/
  *
  * - 市区町村コードで該当地点を取得
  * - 住宅地（01）優先で中央値を算出
  * - localStorageに1年キャッシュ（キー: lp_cache_{prefCode}_{cityCode}_{year}）
+ *
+ * 注: 旧コードはXCT001を使用していたが、XCT001は鑑定評価書情報API。
+ *     地価公示・地価調査の点データはXPT002が正しい。
  */
 var LandPriceAPI = (function() {
     'use strict';
@@ -60,7 +63,7 @@ var LandPriceAPI = (function() {
         };
     }
 
-    // reinfolib XCT001 呼び出し（プロキシ経由優先）
+    // reinfolib XPT002 呼び出し（プロキシ経由優先）
     function fetchLandPrice(prefCode, cityCode, year) {
         var proxyUrl = localStorage.getItem('reinfolib_proxy_url');
         var directKey = localStorage.getItem('reinfolib_api_key');
@@ -73,10 +76,10 @@ var LandPriceAPI = (function() {
                  '&administrative_area_code=' + cityCode + '&z=13';
         var url, headers;
         if (proxyUrl) {
-            url = proxyUrl.replace(/\/$/, '') + '/XCT001' + qs;
+            url = proxyUrl.replace(/\/$/, '') + '/XPT002' + qs;
             headers = {};
         } else {
-            url = 'https://www.reinfolib.mlit.go.jp/ex-api/external/XCT001' + qs;
+            url = 'https://www.reinfolib.mlit.go.jp/ex-api/external/XPT002' + qs;
             headers = { 'Ocp-Apim-Subscription-Key': directKey };
         }
         return fetch(url, { headers: headers })

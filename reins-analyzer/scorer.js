@@ -531,9 +531,137 @@ var ReinsScorer = (function() {
         return results;
     }
 
+    /**
+     * reinfolib 空間API統合による追加スコアリング（非同期）
+     * 物件の所在地をジオコーディングし、ハザード/都市計画/生活環境/人口推計を反映。
+     *
+     * 既存のevaluateAll後に呼び出す想定。
+     * スコア/reasons/構造化データを物件オブジェクトへ追記してPromise<prop>を返す。
+     */
+    function enhanceWithGeo(prop) {
+        if (typeof Geocoder === 'undefined' || typeof ReinfolibClient === 'undefined') {
+            return Promise.resolve(prop);
+        }
+        var loc = prop['所在地'];
+        if (!loc) return Promise.resolve(prop);
+
+        // reinfolib 未設定なら即終了
+        if (!localStorage.getItem('reinfolib_proxy_url') &&
+            !localStorage.getItem('reinfolib_api_key')) {
+            return Promise.resolve(prop);
+        }
+
+        return Geocoder.geocode(loc).then(function(geo) {
+            prop['__geo'] = geo;
+            prop['緯度'] = geo.lat;
+            prop['経度'] = geo.lng;
+
+            var tasks = [];
+            var hazardRes = null, cityRes = null, amenRes = null, popRes = null;
+
+            if (typeof HazardGeo !== 'undefined') {
+                tasks.push(HazardGeo.evaluate(geo.lat, geo.lng).then(function(r) { hazardRes = r; }));
+            }
+            if (typeof CityPlanGeo !== 'undefined') {
+                tasks.push(CityPlanGeo.evaluate(geo.lat, geo.lng).then(function(r) { cityRes = r; }));
+            }
+            if (typeof AmenityGeo !== 'undefined') {
+                tasks.push(AmenityGeo.evaluate(geo.lat, geo.lng).then(function(r) { amenRes = r; }));
+            }
+            if (typeof PopulationGeo !== 'undefined') {
+                tasks.push(PopulationGeo.evaluate(geo.lat, geo.lng).then(function(r) { popRes = r; }));
+            }
+
+            return Promise.all(tasks).then(function() {
+                var score = prop['スコア'] || 0;
+                var extraReasons = [];
+
+                // 既存のhazard.js（市区町村ベース）で既に計上済みの減点を除算しないよう注意
+                // ジオハザードは市区町村ベースより精度が高いので、市区町村ベースは加算しない
+                // 既存evaluateで加算済みの都市計画（商業地域+1等）とはハサミ打ちになるが、
+                // ジオ側(XKT002)は用途地域特化で細かいので上書き優先とする
+
+                if (hazardRes) {
+                    score += hazardRes.totalDelta;
+                    hazardRes.hits.forEach(function(h) {
+                        extraReasons.push(h.label + '(' + (h.delta >= 0 ? '+' : '') + h.delta + ')');
+                    });
+                    prop['__hazardGeo'] = hazardRes;
+                }
+                if (cityRes) {
+                    score += cityRes.totalDelta;
+                    cityRes.hits.forEach(function(h) {
+                        extraReasons.push(h.label + '(' + (h.delta >= 0 ? '+' : '') + h.delta + ')');
+                    });
+                    prop['__cityPlan'] = cityRes;
+                    if (cityRes.useZone && !prop['用途地域']) prop['用途地域'] = cityRes.useZone;
+                }
+                if (amenRes) {
+                    score += amenRes.totalDelta;
+                    amenRes.hits.forEach(function(h) {
+                        extraReasons.push(h.label + '(' + (h.delta >= 0 ? '+' : '') + h.delta + ')');
+                    });
+                    prop['__amenity'] = amenRes;
+                }
+                if (popRes && popRes.available) {
+                    score += popRes.delta;
+                    extraReasons.push(popRes.label + '(' + (popRes.delta >= 0 ? '+' : '') + popRes.delta + ')');
+                    prop['__population'] = popRes;
+                }
+
+                // スコア再計算: 0未満にはしない
+                if (score < 0) score = 0;
+                score = Math.round(score * 10) / 10;
+
+                prop['スコア'] = score;
+                prop['判断根拠'] = (prop['判断根拠'] || '') +
+                    (extraReasons.length ? ' / ' + extraReasons.join(' / ') : '');
+
+                // ランク再判定
+                if (score >= 11) { prop['評価ランク'] = 'S'; prop['優先度'] = 'S(即日)'; prop['リスク評価'] = '低'; }
+                else if (score >= 7) { prop['評価ランク'] = 'A'; prop['優先度'] = 'A(今週)'; prop['リスク評価'] = '中低'; }
+                else if (score >= 3) { prop['評価ランク'] = 'B'; prop['優先度'] = 'B(今月)'; prop['リスク評価'] = '中'; }
+                else { prop['評価ランク'] = 'C'; prop['優先度'] = 'C(見送り)'; prop['リスク評価'] = '高'; }
+
+                // 詳細レポート再生成（geoPinpointを含む）
+                if (typeof Explanation !== 'undefined' && Explanation.buildAll) {
+                    prop['ピンポイント評価_説明'] = Explanation.geoPinpoint(prop);
+                    prop['詳細分析レポート'] = Explanation.buildAll(prop);
+                }
+
+                return prop;
+            });
+        }).catch(function(err) {
+            prop['__geoError'] = err.message;
+            return prop;
+        });
+    }
+
+    /**
+     * 複数物件への空間スコアリング一括適用
+     * 並列度は抑える（reinfolibプロキシの60req/min制限を考慮し直列）
+     */
+    function enhanceAllWithGeo(properties, progressCb) {
+        var chain = Promise.resolve();
+        var total = properties.length;
+        properties.forEach(function(prop, idx) {
+            chain = chain.then(function() {
+                if (progressCb) progressCb(idx, total, prop);
+                return enhanceWithGeo(prop);
+            });
+        });
+        return chain.then(function() {
+            // 再ソート
+            properties.sort(function(a, b) { return (b['スコア'] || 0) - (a['スコア'] || 0); });
+            return properties;
+        });
+    }
+
     return {
         evaluate: evaluate,
         evaluateAll: evaluateAll,
+        enhanceWithGeo: enhanceWithGeo,
+        enhanceAllWithGeo: enhanceAllWithGeo,
         getAreaTier: getAreaTier,
         calcBuildingAge: calcBuildingAge
     };
