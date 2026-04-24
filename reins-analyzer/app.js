@@ -9,14 +9,44 @@
     // 解析済みデータの保持
     var analyzedProperties = [];
 
+    // MinaTechオーナー環境向けのreinfolibプロキシデフォルト
+    // 本番プロキシURLを既定値として焼き込み、初回利用から空間APIが有効化される
+    var DEFAULT_REINFOLIB_PROXY = 'https://reinfolib-proxy.isoya-h.workers.dev';
+
     // ======== 初期化 ========
     document.addEventListener('DOMContentLoaded', function() {
+        applyOwnerDefaults();
         initLicense();
         initTabs();
         initButtons();
         initDragDrop();
         initReinfolibSettings();
     });
+
+    // オーナー環境での自動設定: プロキシURLと空間API有効化を既定ON
+    // 本番公開ドメインとローカル開発、オーナーモードフラグで動作
+    function applyOwnerDefaults() {
+        var host = location.hostname || '';
+        var isOwnerHost = host === '127.0.0.1' || host === 'localhost' ||
+            host === 'minatech-inc.github.io' ||
+            host.indexOf('minatech1210.com') >= 0;
+        var isOwnerFlag = (function() {
+            try { return localStorage.getItem('reins_owner_mode') === 'minatech'; }
+            catch (e) { return false; }
+        })();
+        if (!isOwnerHost && !isOwnerFlag) return;
+
+        // プロキシURLが未設定なら自動セット
+        try {
+            if (!localStorage.getItem('reinfolib_proxy_url')) {
+                localStorage.setItem('reinfolib_proxy_url', DEFAULT_REINFOLIB_PROXY);
+            }
+            // 空間API使用フラグもデフォルトON（明示的にOFFにされていない場合）
+            if (localStorage.getItem('use_reinfolib') === null) {
+                localStorage.setItem('use_reinfolib', '1');
+            }
+        } catch (e) {}
+    }
 
     function initReinfolibSettings() {
         var chk = document.getElementById('use-reinfolib');
@@ -370,6 +400,7 @@
     // reinfolib 空間API統合実行
     function maybeEnhanceWithGeo(properties) {
         if (typeof ReinsScorer === 'undefined' || !ReinsScorer.enhanceAllWithGeo) return;
+        if (localStorage.getItem('use_reinfolib') !== '1') return;
         if (!localStorage.getItem('reinfolib_proxy_url') &&
             !localStorage.getItem('reinfolib_api_key')) return;
         if (!properties || properties.length === 0) return;
