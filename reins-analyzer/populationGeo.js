@@ -11,7 +11,7 @@
 var PopulationGeo = (function() {
     'use strict';
 
-    var Z = 13;
+    var Z = 14; // reinfolib空間APIはz=14必須
 
     function evaluate(lat, lng) {
         var tile = Geocoder.lngLatToTile(lng, lat, Z);

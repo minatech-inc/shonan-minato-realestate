@@ -73,7 +73,7 @@ var LandPriceAPI = (function() {
         if (cached) return Promise.resolve(cached);
 
         var qs = '?response_format=geojson&year=' + y +
-                 '&administrative_area_code=' + cityCode + '&z=13';
+                 '&administrative_area_code=' + cityCode + '&z=14';
         var url, headers;
         if (proxyUrl) {
             url = proxyUrl.replace(/\/$/, '') + '/XPT002' + qs;

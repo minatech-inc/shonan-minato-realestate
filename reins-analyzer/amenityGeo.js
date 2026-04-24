@@ -11,7 +11,7 @@
 var AmenityGeo = (function() {
     'use strict';
 
-    var Z = 13;
+    var Z = 14; // reinfolib空間APIはz=14必須
 
     // 人気学区（神奈川・東京の名門公立エリア）
     // マッチしたら +1 点（名門学区効果は家賃・価格に直結）

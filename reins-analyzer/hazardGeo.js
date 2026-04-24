@@ -17,7 +17,7 @@
 var HazardGeo = (function() {
     'use strict';
 
-    var Z = 13; // 国交省ハザードAPIはz=11〜14提供、z=13を標準採用
+    var Z = 14; // 国交省空間APIはz=14必須（z=13以下は400エラー）
 
     // 浸水深カテゴリから減点を決定
     // reinfolib XKT026/027/028 の properties.A31a_101 等で浸水深ランクが返る

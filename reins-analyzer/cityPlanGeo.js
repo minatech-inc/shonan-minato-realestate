@@ -12,7 +12,7 @@
 var CityPlanGeo = (function() {
     'use strict';
 
-    var Z = 13;
+    var Z = 14; // reinfolib空間APIはz=14必須
 
     // 用途地域コード → 不動産投資価値 (13種)
     // 国交省用途地域コード: 1=第一種低層, 2=第二種低層, ..., 13=工業専用
