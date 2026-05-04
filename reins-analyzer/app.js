@@ -289,10 +289,13 @@
             exportBankReport();
         });
         // SUUMO入稿関連
-        var btnSuumoBroker = document.getElementById('btn-suumo-broker');
-        if (btnSuumoBroker) btnSuumoBroker.addEventListener('click', function() {
+        var openBroker = function() {
             if (typeof SuumoUI !== 'undefined') SuumoUI.openBrokerSettings();
-        });
+        };
+        var btnSuumoBroker = document.getElementById('btn-suumo-broker');
+        if (btnSuumoBroker) btnSuumoBroker.addEventListener('click', openBroker);
+        var btnSuumoBrokerHeader = document.getElementById('btn-suumo-broker-header');
+        if (btnSuumoBrokerHeader) btnSuumoBrokerHeader.addEventListener('click', openBroker);
         var btnSuumoExport = document.getElementById('btn-suumo-export');
         if (btnSuumoExport) btnSuumoExport.addEventListener('click', function() {
             if (!analyzedProperties || analyzedProperties.length === 0) {
