@@ -288,6 +288,26 @@
         document.getElementById('btn-export-bank').addEventListener('click', function() {
             exportBankReport();
         });
+        // SUUMO入稿関連
+        var btnSuumoBroker = document.getElementById('btn-suumo-broker');
+        if (btnSuumoBroker) btnSuumoBroker.addEventListener('click', function() {
+            if (typeof SuumoUI !== 'undefined') SuumoUI.openBrokerSettings();
+        });
+        var btnSuumoExport = document.getElementById('btn-suumo-export');
+        if (btnSuumoExport) btnSuumoExport.addEventListener('click', function() {
+            if (!analyzedProperties || analyzedProperties.length === 0) {
+                showToast('先に物件を解析してください', 'warning');
+                return;
+            }
+            if (typeof SuumoUI === 'undefined') return;
+            // 単一物件 or 一覧から選択
+            if (analyzedProperties.length === 1) {
+                SuumoUI.exportProperty(analyzedProperties[0]);
+            } else {
+                // 最高スコアの物件を初期表示（後で複数対応も検討）
+                SuumoUI.exportProperty(analyzedProperties[0]);
+            }
+        });
         document.getElementById('btn-save-history').addEventListener('click', saveToHistory);
         document.getElementById('btn-open-history').addEventListener('click', openHistoryModal);
         document.getElementById('btn-history-close').addEventListener('click', function() {
