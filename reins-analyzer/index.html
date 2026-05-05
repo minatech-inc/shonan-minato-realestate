@@ -36,6 +36,8 @@
                 <img src="logo.svg" alt="REINS Analyzer" height="40" style="height:40px;">
             </div>
             <div class="header-right">
+                <button id="btn-property-master-header" class="btn btn-outline btn-sm" title="物件マスタDB（永続保存）" style="margin-right:8px;">物件マスタ</button>
+                <button id="btn-image-processor-header" class="btn btn-outline btn-sm" title="画像のSUUMO規格リサイズ・自動マスキング" style="margin-right:8px;">画像処理</button>
                 <button id="btn-suumo-broker-header" class="btn btn-outline btn-sm" title="SUUMO入稿用の業者情報マスタを設定" style="margin-right:10px;">業者情報設定</button>
                 <div id="license-status" class="license-status"></div>
                 <div class="header-badge">宅建業者専用</div>
@@ -351,6 +353,7 @@
                     <button id="btn-export-bank" class="btn btn-outline">銀行担保評価書</button>
                     <button id="btn-suumo-export" class="btn btn-primary" title="SUUMO入稿シートを生成">SUUMO入稿</button>
                     <button id="btn-suumo-broker" class="btn btn-outline" title="SUUMO入稿用の業者情報マスタ設定">業者情報</button>
+                    <button id="btn-save-master" class="btn btn-outline" title="物件マスタDBへ永続保存">マスタに保存</button>
                     <button id="btn-save-history" class="btn btn-outline">履歴に保存</button>
                     <button id="btn-open-history" class="btn btn-outline">履歴/比較</button>
                 </div>
@@ -457,28 +460,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
-    <script src="license.js?v=20260424c"></script>
-    <script src="parser.js?v=20260424c"></script>
-    <script src="category.js?v=20260424c"></script>
-    <script src="market.js?v=20260424c"></script>
-    <script src="landprice.js?v=20260424c"></script>
-    <script src="geocode.js?v=20260424c"></script>
-    <script src="reinfolibClient.js?v=20260424c"></script>
-    <script src="hazardGeo.js?v=20260424c"></script>
-    <script src="cityPlanGeo.js?v=20260424c"></script>
-    <script src="amenityGeo.js?v=20260424c"></script>
-    <script src="populationGeo.js?v=20260424c"></script>
-    <script src="appraisal.js?v=20260424c"></script>
-    <script src="hazard.js?v=20260424c"></script>
-    <script src="explanation.js?v=20260424c"></script>
-    <script src="scorer.js?v=20260424c"></script>
-    <script src="history.js?v=20260424c"></script>
-    <script src="bankReport.js?v=20260424c"></script>
-    <script src="suumoSpec.js?v=20260424c"></script>
-    <script src="suumoFeatures.js?v=20260424c"></script>
-    <script src="suumoExporter.js?v=20260424c"></script>
-    <script src="suumoUI.js?v=20260424c"></script>
-    <script src="app.js?v=20260424c"></script>
-    <script src="pdf-analyzer.js?v=20260424c"></script>
+    <script src="license.js?v=20260424d"></script>
+    <script src="parser.js?v=20260424d"></script>
+    <script src="category.js?v=20260424d"></script>
+    <script src="market.js?v=20260424d"></script>
+    <script src="landprice.js?v=20260424d"></script>
+    <script src="geocode.js?v=20260424d"></script>
+    <script src="reinfolibClient.js?v=20260424d"></script>
+    <script src="hazardGeo.js?v=20260424d"></script>
+    <script src="cityPlanGeo.js?v=20260424d"></script>
+    <script src="amenityGeo.js?v=20260424d"></script>
+    <script src="populationGeo.js?v=20260424d"></script>
+    <script src="appraisal.js?v=20260424d"></script>
+    <script src="hazard.js?v=20260424d"></script>
+    <script src="explanation.js?v=20260424d"></script>
+    <script src="scorer.js?v=20260424d"></script>
+    <script src="history.js?v=20260424d"></script>
+    <script src="bankReport.js?v=20260424d"></script>
+    <script src="suumoSpec.js?v=20260424d"></script>
+    <script src="suumoFeatures.js?v=20260424d"></script>
+    <script src="suumoExporter.js?v=20260424d"></script>
+    <script src="suumoUI.js?v=20260424d"></script>
+    <script src="propertyMaster.js?v=20260424d"></script>
+    <script src="propertyMasterUI.js?v=20260424d"></script>
+    <script src="imageProcessor.js?v=20260424d"></script>
+    <script src="imageProcessorUI.js?v=20260424d"></script>
+    <script src="app.js?v=20260424d"></script>
+    <script src="pdf-analyzer.js?v=20260424d"></script>
 </body>
 </html>

@@ -296,6 +296,35 @@
         if (btnSuumoBroker) btnSuumoBroker.addEventListener('click', openBroker);
         var btnSuumoBrokerHeader = document.getElementById('btn-suumo-broker-header');
         if (btnSuumoBrokerHeader) btnSuumoBrokerHeader.addEventListener('click', openBroker);
+
+        // 物件マスタ
+        var btnPropertyMaster = document.getElementById('btn-property-master-header');
+        if (btnPropertyMaster) btnPropertyMaster.addEventListener('click', function() {
+            if (typeof PropertyMasterUI !== 'undefined') {
+                PropertyMasterUI.openMasterList(function(record) {
+                    // 読込時：解析結果として復元
+                    analyzedProperties = [record.prop];
+                    renderResults();
+                    showToast('物件マスタから読み込みました: ' + (record.propertyName || record.address), 'success');
+                });
+            }
+        });
+        var btnSaveMaster = document.getElementById('btn-save-master');
+        if (btnSaveMaster) btnSaveMaster.addEventListener('click', function() {
+            if (!analyzedProperties || analyzedProperties.length === 0) {
+                showToast('先に物件を解析してください', 'warning');
+                return;
+            }
+            if (typeof PropertyMasterUI !== 'undefined') {
+                PropertyMasterUI.saveFromAnalysis(analyzedProperties[0]);
+            }
+        });
+
+        // 画像処理
+        var btnImageProc = document.getElementById('btn-image-processor-header');
+        if (btnImageProc) btnImageProc.addEventListener('click', function() {
+            if (typeof ImageProcessorUI !== 'undefined') ImageProcessorUI.open();
+        });
         var btnSuumoExport = document.getElementById('btn-suumo-export');
         if (btnSuumoExport) btnSuumoExport.addEventListener('click', function() {
             if (!analyzedProperties || analyzedProperties.length === 0) {
