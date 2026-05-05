@@ -3,16 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REINS Analyzer | MinaTech - 宅建業者向け物件評価ツール</title>
+    <title>MinaTech Realty Console | 不動産仲介業務統合プラットフォーム</title>
+    <meta name="description" content="不動産仲介業務をワンストップで支える統合コンソール。物件評価・SUUMO入稿・画像処理・取引先管理を一画面で。">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="theme.css?v=20260424e">
+    <script>
+      // テーマ初期化（FOUC防止のため<head>で実行）
+      (function() {
+        var t;
+        try { t = localStorage.getItem('rc_theme'); } catch (e) {}
+        document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+      })();
+    </script>
 </head>
 <body>
     <!-- ライセンス認証モーダル -->
     <div id="license-modal" class="license-modal">
         <div class="license-modal-content">
-            <div class="license-modal-header">
-                <img src="logo.svg" alt="REINS Analyzer" height="48" style="height:48px;">
+            <div class="license-modal-header" style="display:flex;align-items:center;gap:12px;justify-content:center;">
+                <span class="brand-mini-mark">M</span>
+                <span style="font-size:18px;font-weight:700;letter-spacing:-0.01em;">MinaTech Realty Console</span>
             </div>
             <h2>ライセンス認証</h2>
             <p class="license-modal-desc">本ツールの利用にはライセンスキーが必要です。<br>キーをお持ちでない方は MinaTech までお問い合わせください。</p>
@@ -32,13 +43,21 @@
     <!-- ヘッダー -->
     <header class="header">
         <div class="header-inner">
-            <div class="logo">
-                <img src="logo.svg" alt="REINS Analyzer" height="40" style="height:40px;">
+            <div class="logo brand-mini">
+                <span class="brand-mini-mark">M</span>
+                <span class="brand-mini-text">
+                    <span class="brand-mini-name">MinaTech Realty Console</span>
+                    <span class="brand-mini-sub">Property Operations Platform</span>
+                </span>
             </div>
             <div class="header-right">
                 <button id="btn-property-master-header" class="btn btn-outline btn-sm" title="物件マスタDB（永続保存）" style="margin-right:8px;">物件マスタ</button>
                 <button id="btn-image-processor-header" class="btn btn-outline btn-sm" title="画像のSUUMO規格リサイズ・自動マスキング" style="margin-right:8px;">画像処理</button>
                 <button id="btn-suumo-broker-header" class="btn btn-outline btn-sm" title="SUUMO入稿用の業者情報マスタを設定" style="margin-right:10px;">業者情報設定</button>
+                <div class="theme-toggle" role="group" aria-label="テーマ切替" style="margin-right:10px;">
+                    <button id="theme-light" type="button" class="active" title="ライトモード" aria-label="ライトモード">☀</button>
+                    <button id="theme-dark"  type="button" title="ダークモード" aria-label="ダークモード">☾</button>
+                </div>
                 <div id="license-status" class="license-status"></div>
                 <div class="header-badge">宅建業者専用</div>
             </div>
@@ -460,32 +479,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
-    <script src="license.js?v=20260424d"></script>
-    <script src="parser.js?v=20260424d"></script>
-    <script src="category.js?v=20260424d"></script>
-    <script src="market.js?v=20260424d"></script>
-    <script src="landprice.js?v=20260424d"></script>
-    <script src="geocode.js?v=20260424d"></script>
-    <script src="reinfolibClient.js?v=20260424d"></script>
-    <script src="hazardGeo.js?v=20260424d"></script>
-    <script src="cityPlanGeo.js?v=20260424d"></script>
-    <script src="amenityGeo.js?v=20260424d"></script>
-    <script src="populationGeo.js?v=20260424d"></script>
-    <script src="appraisal.js?v=20260424d"></script>
-    <script src="hazard.js?v=20260424d"></script>
-    <script src="explanation.js?v=20260424d"></script>
-    <script src="scorer.js?v=20260424d"></script>
-    <script src="history.js?v=20260424d"></script>
-    <script src="bankReport.js?v=20260424d"></script>
-    <script src="suumoSpec.js?v=20260424d"></script>
-    <script src="suumoFeatures.js?v=20260424d"></script>
-    <script src="suumoExporter.js?v=20260424d"></script>
-    <script src="suumoUI.js?v=20260424d"></script>
-    <script src="propertyMaster.js?v=20260424d"></script>
-    <script src="propertyMasterUI.js?v=20260424d"></script>
-    <script src="imageProcessor.js?v=20260424d"></script>
-    <script src="imageProcessorUI.js?v=20260424d"></script>
-    <script src="app.js?v=20260424d"></script>
-    <script src="pdf-analyzer.js?v=20260424d"></script>
+    <script src="license.js?v=20260424e"></script>
+    <script src="parser.js?v=20260424e"></script>
+    <script src="category.js?v=20260424e"></script>
+    <script src="market.js?v=20260424e"></script>
+    <script src="landprice.js?v=20260424e"></script>
+    <script src="geocode.js?v=20260424e"></script>
+    <script src="reinfolibClient.js?v=20260424e"></script>
+    <script src="hazardGeo.js?v=20260424e"></script>
+    <script src="cityPlanGeo.js?v=20260424e"></script>
+    <script src="amenityGeo.js?v=20260424e"></script>
+    <script src="populationGeo.js?v=20260424e"></script>
+    <script src="appraisal.js?v=20260424e"></script>
+    <script src="hazard.js?v=20260424e"></script>
+    <script src="explanation.js?v=20260424e"></script>
+    <script src="scorer.js?v=20260424e"></script>
+    <script src="history.js?v=20260424e"></script>
+    <script src="bankReport.js?v=20260424e"></script>
+    <script src="suumoSpec.js?v=20260424e"></script>
+    <script src="suumoFeatures.js?v=20260424e"></script>
+    <script src="suumoExporter.js?v=20260424e"></script>
+    <script src="suumoUI.js?v=20260424e"></script>
+    <script src="propertyMaster.js?v=20260424e"></script>
+    <script src="propertyMasterUI.js?v=20260424e"></script>
+    <script src="imageProcessor.js?v=20260424e"></script>
+    <script src="imageProcessorUI.js?v=20260424e"></script>
+    <script src="app.js?v=20260424e"></script>
+    <script src="pdf-analyzer.js?v=20260424e"></script>
 </body>
 </html>

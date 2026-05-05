@@ -21,7 +21,25 @@
         initButtons();
         initDragDrop();
         initReinfolibSettings();
+        initThemeToggle();
     });
+
+    // ======== テーマ切替 ========
+    function initThemeToggle() {
+        var btnLight = document.getElementById('theme-light');
+        var btnDark  = document.getElementById('theme-dark');
+        if (!btnLight || !btnDark) return;
+        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var setActive = function(mode) {
+            document.documentElement.setAttribute('data-theme', mode);
+            btnLight.classList.toggle('active', mode === 'light');
+            btnDark.classList.toggle('active', mode === 'dark');
+            try { localStorage.setItem('rc_theme', mode); } catch (e) {}
+        };
+        setActive(current);
+        btnLight.addEventListener('click', function() { setActive('light'); });
+        btnDark.addEventListener('click',  function() { setActive('dark'); });
+    }
 
     // オーナー環境での自動設定: プロキシURLと空間API有効化を既定ON
     // 本番公開ドメインとローカル開発、オーナーモードフラグで動作
