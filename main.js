@@ -105,11 +105,83 @@
                         </ul>
                     </div>
                 </div>
+                <div class="footer-legal" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:1.5rem;padding-top:1rem;text-align:center;">
+                    <a href="privacy.html" style="color:var(--gray-500);font-size:0.78rem;margin:0 12px;">プライバシーポリシー</a>
+                    <a href="terms.html" style="color:var(--gray-500);font-size:0.78rem;margin:0 12px;">利用規約</a>
+                    <a href="tokushoho.html" style="color:var(--gray-500);font-size:0.78rem;margin:0 12px;">特定商取引法に基づく表記</a>
+                </div>
                 <div class="footer-bottom">
                     © ${year} ${SITE.name} (${SITE.nameFull}) — All Rights Reserved.
                 </div>
             </div>
         `;
+    }
+
+    // ============================================
+    // Contact form: Ajax 送信 + 成功/失敗 UI フィードバック
+    // ============================================
+    function initContactForm() {
+        const form = document.getElementById('contact-form');
+        if (!form || !form.action || form.action.indexOf('formspree') < 0) return;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const note = form.querySelector('.form-note');
+        let statusEl = form.querySelector('.form-status');
+        if (!statusEl) {
+            statusEl = document.createElement('div');
+            statusEl.className = 'form-status';
+            statusEl.style.cssText = 'margin-top:1rem;padding:14px 18px;border-radius:6px;font-size:0.9rem;display:none;';
+            form.appendChild(statusEl);
+        }
+
+        function showStatus(type, msg) {
+            statusEl.style.display = 'block';
+            if (type === 'success') {
+                statusEl.style.background = '#ecfdf5';
+                statusEl.style.color = '#065f46';
+                statusEl.style.border = '1px solid #10b981';
+            } else if (type === 'error') {
+                statusEl.style.background = '#fef2f2';
+                statusEl.style.color = '#991b1b';
+                statusEl.style.border = '1px solid #dc2626';
+            } else {
+                statusEl.style.background = '#eff6ff';
+                statusEl.style.color = '#1e40af';
+                statusEl.style.border = '1px solid #3b82f6';
+            }
+            statusEl.textContent = msg;
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const orig = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '送信中…'; }
+            showStatus('info', '送信中です。しばらくお待ちください…');
+            try {
+                const data = new FormData(form);
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: data,
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    showStatus('success', '送信が完了しました。1〜2営業日以内にご返信いたします。');
+                    form.reset();
+                } else {
+                    let errMsg = '送信に失敗しました。';
+                    try {
+                        const j = await res.json();
+                        if (j && j.errors && j.errors.length) {
+                            errMsg += ' ' + j.errors.map(e => e.message).join(' / ');
+                        }
+                    } catch (_) {}
+                    showStatus('error', errMsg + ' お電話（0467-28-7603）またはメール（isoya.h@minatech1210.com）でも受け付けております。');
+                }
+            } catch (err) {
+                showStatus('error', '通信エラーが発生しました。インターネット接続をご確認のうえ再度お試しください。お電話（0467-28-7603）でも承ります。');
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = orig; }
+            }
+        });
     }
 
     // ============================================
@@ -354,5 +426,6 @@
         renderPropertiesList();
         renderPropertyDetail();
         renderMarketStats();
+        initContactForm();
     });
 })();

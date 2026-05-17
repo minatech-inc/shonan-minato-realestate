@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ページが見つかりません | Shonan Minato REAL ESTATE</title>
+    <meta name="robots" content="noindex,follow">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .err-wrap {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+        }
+        .err-card {
+            text-align: center;
+            max-width: 560px;
+        }
+        .err-code {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 7rem;
+            line-height: 1;
+            color: var(--gray-300);
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .err-title {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+        }
+        .err-desc {
+            color: var(--gray-600);
+            line-height: 2;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .err-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .err-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .err-btn-primary {
+            background: var(--navy, #1a2940);
+            color: #fff;
+        }
+        .err-btn-primary:hover { opacity: 0.85; }
+        .err-btn-secondary {
+            background: transparent;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        .err-btn-secondary:hover { background: var(--ivory); }
+    </style>
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <main class="err-wrap">
+        <div class="err-card">
+            <div class="err-code">404</div>
+            <h1 class="err-title">ページが見つかりません</h1>
+            <p class="err-desc">
+                お探しのページは移動・削除されたか、URLが変更された可能性があります。<br>
+                お手数ですが、以下のリンクからお目的のページをお探しください。
+            </p>
+            <div class="err-actions">
+                <a href="/" class="err-btn err-btn-primary">トップへ戻る</a>
+                <a href="properties.html" class="err-btn err-btn-secondary">物件を探す</a>
+                <a href="contact.html" class="err-btn err-btn-secondary">お問い合わせ</a>
+            </div>
+        </div>
+    </main>
+
+    <footer id="site-footer" class="site-footer"></footer>
+    <script src="main.js"></script>
+</body>
+</html>
