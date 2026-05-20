@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 540" width="800" height="540">
+  <defs>
+    <linearGradient id="bg-sell" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e3a8a"/>
+      <stop offset="1" stop-color="#1e40af"/>
+    </linearGradient>
+    <linearGradient id="house-sell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dbeafe"/>
+      <stop offset="1" stop-color="#93c5fd"/>
+    </linearGradient>
+    <linearGradient id="bar-grad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#3b5bb5"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="bar-peak" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <filter id="shadow-sell" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.28"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="800" height="540" fill="url(#bg-sell)"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.07" stroke="#fff" stroke-width="1">
+    <line x1="0" y1="180" x2="800" y2="180"/>
+    <line x1="0" y1="280" x2="800" y2="280"/>
+    <line x1="0" y1="380" x2="800" y2="380"/>
+  </g>
+
+  <!-- Bar chart: 12 months bars showing 1-3月 peak -->
+  <g transform="translate(80, 240)">
+    <!-- Y axis -->
+    <line x1="0" y1="0" x2="0" y2="220" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+    <line x1="0" y1="220" x2="640" y2="220" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+
+    <!-- Bars: 1-12 month -->
+    <!-- Jan-Mar: peak (yellow) -->
+    <rect x="10" y="20" width="38" height="200" rx="2" fill="url(#bar-peak)"/>
+    <rect x="58" y="15" width="38" height="205" rx="2" fill="url(#bar-peak)"/>
+    <rect x="106" y="25" width="38" height="195" rx="2" fill="url(#bar-peak)"/>
+    <!-- Apr-Dec: regular (blue) -->
+    <rect x="154" y="80" width="38" height="140" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="202" y="95" width="38" height="125" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="250" y="110" width="38" height="110" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="298" y="115" width="38" height="105" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="346" y="105" width="38" height="115" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="394" y="95" width="38" height="125" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="442" y="85" width="38" height="135" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="490" y="70" width="38" height="150" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+    <rect x="538" y="50" width="38" height="170" rx="2" fill="url(#bar-grad)" opacity="0.8"/>
+
+    <!-- Month labels -->
+    <g font-family="'Noto Sans JP', sans-serif" fill="#fff" font-size="11" opacity="0.7" text-anchor="middle">
+      <text x="29" y="240">1</text><text x="77" y="240">2</text><text x="125" y="240">3</text>
+      <text x="173" y="240">4</text><text x="221" y="240">5</text><text x="269" y="240">6</text>
+      <text x="317" y="240">7</text><text x="365" y="240">8</text><text x="413" y="240">9</text>
+      <text x="461" y="240">10</text><text x="509" y="240">11</text><text x="557" y="240">12</text>
+    </g>
+    <text x="290" y="262" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" fill="#fff" font-size="11" opacity="0.7">月</text>
+
+    <!-- Peak annotation -->
+    <g transform="translate(77, -10)">
+      <path d="M 0 0 L 0 -20 L 70 -20" stroke="#fbbf24" stroke-width="1.5" fill="none"/>
+      <text x="80" y="-15" font-family="'Noto Sans JP', sans-serif" fill="#fbbf24" font-size="13" font-weight="700">繁忙期 +4.2%</text>
+    </g>
+  </g>
+
+  <!-- House icon top right -->
+  <g filter="url(#shadow-sell)" transform="translate(590, 130)">
+    <!-- Roof -->
+    <polygon points="0,60 70,0 140,60" fill="#fbbf24"/>
+    <!-- Body -->
+    <rect x="12" y="60" width="116" height="90" rx="2" fill="url(#house-sell)"/>
+    <!-- Door -->
+    <rect x="58" y="92" width="24" height="58" fill="#1e3a8a"/>
+    <circle cx="76" cy="125" r="1.8" fill="#fbbf24"/>
+    <!-- Window -->
+    <rect x="22" y="78" width="22" height="20" rx="1.5" fill="#fff"/>
+    <rect x="98" y="78" width="22" height="20" rx="1.5" fill="#fff"/>
+    <line x1="33" y1="78" x2="33" y2="98" stroke="#1e3a8a" stroke-width="1"/>
+    <line x1="22" y1="88" x2="44" y2="88" stroke="#1e3a8a" stroke-width="1"/>
+    <line x1="109" y1="78" x2="109" y2="98" stroke="#1e3a8a" stroke-width="1"/>
+    <line x1="98" y1="88" x2="120" y2="88" stroke="#1e3a8a" stroke-width="1"/>
+    <!-- SOLD tag -->
+    <g transform="translate(105, -10)">
+      <rect x="-25" y="0" width="50" height="22" rx="2" fill="#dc2626"/>
+      <text x="0" y="16" text-anchor="middle" font-family="'Noto Sans JP', sans-serif" fill="#fff" font-size="11" font-weight="700">SOLD</text>
+    </g>
+  </g>
+
+  <!-- Title -->
+  <g font-family="'Noto Sans JP', sans-serif" fill="#fff">
+    <text x="60" y="80" font-size="13" letter-spacing="0.18em" opacity="0.75" font-weight="500">SELL TIMING · AI ANALYSIS</text>
+    <text x="60" y="118" font-size="26" font-weight="700">藤沢市の高値売却タイミング</text>
+  </g>
+</svg>
