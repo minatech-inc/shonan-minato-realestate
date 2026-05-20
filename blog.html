@@ -45,53 +45,161 @@
         </div>
     </div>
 
-    <section>
-        <div class="container-narrow" style="max-width:920px;">
-            <article style="border-bottom:1px solid var(--gray-200);padding-bottom:32px;margin-bottom:32px;">
-                <div style="color:var(--gray-500);font-size:0.85rem;margin-bottom:8px;">2026.05.20 / 投資</div>
-                <h2 style="font-size:1.4rem;margin-bottom:12px;"><a href="blog/shonan-investment-comparison-2026.html" style="color:var(--gray-900);text-decoration:none;">湘南3エリア投資収益比較2026｜藤沢・茅ヶ崎・鎌倉の賃貸/民泊/区分マンション利回り徹底分析</a></h2>
-                <p style="color:var(--gray-700);line-height:1.85;font-size:0.95rem;">湘南エリアの不動産投資を「賃貸経営・民泊運営・区分マンション」の3手法で徹底比較。実勢利回り・稼働率・出口戦略を2026年版データで網羅し、エリア×手法の最適マッチングを宅建業者の視点で解説します...</p>
-                <a href="blog/shonan-investment-comparison-2026.html" style="display:inline-block;margin-top:10px;color:var(--navy);font-weight:600;text-decoration:none;font-size:0.9rem;">続きを読む →</a>
-            </article>
+    <section style="padding:50px 0 80px;">
+        <div class="container">
 
-            <article style="border-bottom:1px solid var(--gray-200);padding-bottom:32px;margin-bottom:32px;">
-                <div style="color:var(--gray-500);font-size:0.85rem;margin-bottom:8px;">2026.05.20 / 相続</div>
-                <h2 style="font-size:1.4rem;margin-bottom:12px;"><a href="blog/fujisawa-inheritance-5steps.html" style="color:var(--gray-900);text-decoration:none;">藤沢で不動産を相続したら最初にやるべき5ステップ｜10ヶ月期限から逆算する実務手順</a></h2>
-                <p style="color:var(--gray-700);line-height:1.85;font-size:0.95rem;">藤沢市内で実家・親族の不動産を相続したらまず何をすべきか。相続税申告10ヶ月期限から逆算した5つの実務ステップを、宅建業者が司法書士・税理士連携の視点で解説。取得費加算特例まで網羅...</p>
-                <a href="blog/fujisawa-inheritance-5steps.html" style="display:inline-block;margin-top:10px;color:var(--navy);font-weight:600;text-decoration:none;font-size:0.9rem;">続きを読む →</a>
-            </article>
+            <!-- カテゴリフィルタ -->
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:36px;">
+                <a href="#" class="filter-btn active" data-cat="all" style="padding:8px 18px;border:1px solid var(--gray-300);background:#fff;border-radius:999px;text-decoration:none;color:var(--gray-700);font-size:0.85rem;font-weight:500;">すべて</a>
+                <a href="#" class="filter-btn" data-cat="invest" style="padding:8px 18px;border:1px solid var(--gray-300);background:#fff;border-radius:999px;text-decoration:none;color:var(--gray-700);font-size:0.85rem;font-weight:500;">投資</a>
+                <a href="#" class="filter-btn" data-cat="sell" style="padding:8px 18px;border:1px solid var(--gray-300);background:#fff;border-radius:999px;text-decoration:none;color:var(--gray-700);font-size:0.85rem;font-weight:500;">売却ノウハウ</a>
+                <a href="#" class="filter-btn" data-cat="inheritance" style="padding:8px 18px;border:1px solid var(--gray-300);background:#fff;border-radius:999px;text-decoration:none;color:var(--gray-700);font-size:0.85rem;font-weight:500;">相続</a>
+                <a href="#" class="filter-btn" data-cat="relocation" style="padding:8px 18px;border:1px solid var(--gray-300);background:#fff;border-radius:999px;text-decoration:none;color:var(--gray-700);font-size:0.85rem;font-weight:500;">住み替え・移住</a>
+            </div>
 
-            <article style="border-bottom:1px solid var(--gray-200);padding-bottom:32px;margin-bottom:32px;">
-                <div style="color:var(--gray-500);font-size:0.85rem;margin-bottom:8px;">2026.05.20 / 住み替え・移住</div>
-                <h2 style="font-size:1.4rem;margin-bottom:12px;"><a href="blog/shonan-relocation-guide.html" style="color:var(--gray-900);text-decoration:none;">東京から湘南へ移住する人の不動産購入ガイド2026｜エリア別・予算別の選び方</a></h2>
-                <p style="color:var(--gray-700);line-height:1.85;font-size:0.95rem;">東京から藤沢・茅ヶ崎・鎌倉への移住検討者向けに、エリア別の特徴・予算別おすすめエリア・購入時の注意点を宅建業者が解説。リモートワーク時代の湘南移住完全ガイド...</p>
-                <a href="blog/shonan-relocation-guide.html" style="display:inline-block;margin-top:10px;color:var(--navy);font-weight:600;text-decoration:none;font-size:0.9rem;">続きを読む →</a>
-            </article>
+            <div class="blog-grid" id="blog-list">
 
-            <article style="border-bottom:1px solid var(--gray-200);padding-bottom:32px;margin-bottom:32px;">
-                <div style="color:var(--gray-500);font-size:0.85rem;margin-bottom:8px;">2026.05.20 / 売却ノウハウ</div>
-                <h2 style="font-size:1.4rem;margin-bottom:12px;"><a href="blog/fujisawa-sell-timing.html" style="color:var(--gray-900);text-decoration:none;">藤沢市の不動産を高く売却する3つのタイミング｜AI分析が示すベストな売り時</a></h2>
-                <p style="color:var(--gray-700);line-height:1.85;font-size:0.95rem;">藤沢市内の中古マンション・戸建市況をAIスコアリングで分析し、過去5年の取引データから最も高値で売れたタイミング3パターンを抽出。査定前に知っておきたい3つの売却ポイントを解説します...</p>
-                <a href="blog/fujisawa-sell-timing.html" style="display:inline-block;margin-top:10px;color:var(--navy);font-weight:600;text-decoration:none;font-size:0.9rem;">続きを読む →</a>
-            </article>
+                <a href="blog/shonan-investment-comparison-2026.html" class="blog-card" data-cat="invest">
+                    <div class="blog-card-thumb thumb-invest">
+                        <div class="blog-card-thumb-label">Investment</div>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-cat-badge cat-invest">投資</span>
+                            <span>2026.05.20</span>
+                            <span>·</span>
+                            <span>約8分</span>
+                        </div>
+                        <div class="blog-card-title">湘南3エリア投資収益比較2026｜藤沢・茅ヶ崎・鎌倉の賃貸/民泊/区分マンション利回り徹底分析</div>
+                        <div class="blog-card-excerpt">湘南エリアの不動産投資を「賃貸経営・民泊運営・区分マンション」の3手法で徹底比較。実勢利回り・稼働率・出口戦略を2026年版データで網羅し、エリア×手法の最適マッチングを宅建業者の視点で解説します。</div>
+                        <div class="blog-card-read">続きを読む →</div>
+                    </div>
+                </a>
 
-            <article style="border-bottom:1px solid var(--gray-200);padding-bottom:32px;margin-bottom:32px;">
-                <div style="color:var(--gray-500);font-size:0.85rem;margin-bottom:8px;">2026.05.18 / 投資</div>
-                <h2 style="font-size:1.4rem;margin-bottom:12px;"><a href="blog/chigasaki-investment-2026.html" style="color:var(--gray-900);text-decoration:none;">茅ヶ崎の中古マンション投資｜2026年の利回り相場と注目エリア5選</a></h2>
-                <p style="color:var(--gray-700);line-height:1.85;font-size:0.95rem;">茅ヶ崎駅周辺・辻堂・香川エリアの中古マンション利回りを比較。表面利回り10%超の物件がまだ存在するエリアと、購入時に必ず確認すべきチェックポイントを実例とともに紹介...</p>
-                <a href="blog/chigasaki-investment-2026.html" style="display:inline-block;margin-top:10px;color:var(--navy);font-weight:600;text-decoration:none;font-size:0.9rem;">続きを読む →</a>
-            </article>
+                <a href="blog/fujisawa-inheritance-5steps.html" class="blog-card" data-cat="inheritance">
+                    <div class="blog-card-thumb thumb-inheritance">
+                        <div class="blog-card-thumb-label">Inheritance</div>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-cat-badge cat-inheritance">相続</span>
+                            <span>2026.05.20</span>
+                            <span>·</span>
+                            <span>約7分</span>
+                        </div>
+                        <div class="blog-card-title">藤沢で不動産を相続したら最初にやるべき5ステップ｜10ヶ月期限から逆算する実務手順</div>
+                        <div class="blog-card-excerpt">藤沢市内で実家・親族の不動産を相続したらまず何をすべきか。相続税申告10ヶ月期限から逆算した5つの実務ステップを、宅建業者が司法書士・税理士連携の視点で解説。取得費加算特例まで網羅します。</div>
+                        <div class="blog-card-read">続きを読む →</div>
+                    </div>
+                </a>
 
-            <article style="padding-bottom:32px;">
-                <div style="color:var(--gray-500);font-size:0.85rem;margin-bottom:8px;">2026.05.15 / 相続</div>
-                <h2 style="font-size:1.4rem;margin-bottom:12px;"><a href="blog/kamakura-inherited-property.html" style="color:var(--gray-900);text-decoration:none;">鎌倉の相続不動産を売却する流れと税金｜実家じまいで損しないポイント</a></h2>
-                <p style="color:var(--gray-700);line-height:1.85;font-size:0.95rem;">鎌倉市内で多発する「実家じまい」案件を、税理士・司法書士と連携してきた弊社の実務経験から解説。譲渡所得税の特例、登記費用、空き家対策特別措置法、近隣との境界確定まで、相続不動産売却の全プロセスを網羅...</p>
-                <a href="blog/kamakura-inherited-property.html" style="display:inline-block;margin-top:10px;color:var(--navy);font-weight:600;text-decoration:none;font-size:0.9rem;">続きを読む →</a>
-            </article>
+                <a href="blog/shonan-relocation-guide.html" class="blog-card" data-cat="relocation">
+                    <div class="blog-card-thumb thumb-relocation">
+                        <div class="blog-card-thumb-label">Relocation</div>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-cat-badge cat-relocation">住み替え・移住</span>
+                            <span>2026.05.20</span>
+                            <span>·</span>
+                            <span>約7分</span>
+                        </div>
+                        <div class="blog-card-title">東京から湘南へ移住する人の不動産購入ガイド2026｜エリア別・予算別の選び方</div>
+                        <div class="blog-card-excerpt">東京から藤沢・茅ヶ崎・鎌倉への移住検討者向けに、エリア別の特徴・予算別おすすめエリア・購入時の注意点を宅建業者が解説。リモートワーク時代の湘南移住完全ガイド。</div>
+                        <div class="blog-card-read">続きを読む →</div>
+                    </div>
+                </a>
+
+                <a href="blog/fujisawa-sell-timing.html" class="blog-card" data-cat="sell">
+                    <div class="blog-card-thumb thumb-sell">
+                        <div class="blog-card-thumb-label">Sell Timing</div>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-cat-badge cat-sell">売却ノウハウ</span>
+                            <span>2026.05.20</span>
+                            <span>·</span>
+                            <span>約5分</span>
+                        </div>
+                        <div class="blog-card-title">藤沢市の不動産を高く売却する3つのタイミング｜AI分析が示すベストな売り時</div>
+                        <div class="blog-card-excerpt">藤沢市内の中古マンション・戸建市況をAIスコアリングで分析し、過去5年の取引データから最も高値で売れたタイミング3パターンを抽出。査定前に知っておきたい3つの売却ポイントを解説します。</div>
+                        <div class="blog-card-read">続きを読む →</div>
+                    </div>
+                </a>
+
+                <a href="blog/chigasaki-investment-2026.html" class="blog-card" data-cat="invest">
+                    <div class="blog-card-thumb thumb-invest">
+                        <div class="blog-card-thumb-label">Investment</div>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-cat-badge cat-invest">投資</span>
+                            <span>2026.05.18</span>
+                            <span>·</span>
+                            <span>約5分</span>
+                        </div>
+                        <div class="blog-card-title">茅ヶ崎の中古マンション投資｜2026年の利回り相場と注目エリア5選</div>
+                        <div class="blog-card-excerpt">茅ヶ崎駅周辺・辻堂・香川エリアの中古マンション利回りを比較。表面利回り10%超の物件がまだ存在するエリアと、購入時に必ず確認すべきチェックポイントを実例とともに紹介。</div>
+                        <div class="blog-card-read">続きを読む →</div>
+                    </div>
+                </a>
+
+                <a href="blog/kamakura-inherited-property.html" class="blog-card" data-cat="inheritance">
+                    <div class="blog-card-thumb thumb-inheritance">
+                        <div class="blog-card-thumb-label">Inheritance</div>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span class="blog-cat-badge cat-inheritance">相続</span>
+                            <span>2026.05.15</span>
+                            <span>·</span>
+                            <span>約6分</span>
+                        </div>
+                        <div class="blog-card-title">鎌倉の相続不動産を売却する流れと税金｜実家じまいで損しないポイント</div>
+                        <div class="blog-card-excerpt">鎌倉市内で多発する「実家じまい」案件を、税理士・司法書士と連携してきた弊社の実務経験から解説。譲渡所得税の特例、登記費用、空き家対策特別措置法、近隣との境界確定まで網羅。</div>
+                        <div class="blog-card-read">続きを読む →</div>
+                    </div>
+                </a>
+
+            </div>
+
         </div>
     </section>
 
     <footer id="site-footer" class="site-footer"></footer>
     <script src="main.js"></script>
+    <script>
+        // カテゴリフィルタ
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = '#fff';
+                    b.style.color = 'var(--gray-700)';
+                    b.style.borderColor = 'var(--gray-300)';
+                });
+                btn.classList.add('active');
+                btn.style.background = 'var(--navy)';
+                btn.style.color = '#fff';
+                btn.style.borderColor = 'var(--navy)';
+                const cat = btn.dataset.cat;
+                document.querySelectorAll('.blog-card').forEach(card => {
+                    if (cat === 'all' || card.dataset.cat === cat) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        // 初期状態：すべてボタンをアクティブスタイルに
+        const allBtn = document.querySelector('.filter-btn.active');
+        if (allBtn) {
+            allBtn.style.background = 'var(--navy)';
+            allBtn.style.color = '#fff';
+            allBtn.style.borderColor = 'var(--navy)';
+        }
+    </script>
 </body>
 </html>

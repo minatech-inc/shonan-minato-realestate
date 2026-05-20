@@ -38,10 +38,12 @@
                 </a>
                 <nav class="nav-main" id="nav-main">
                     <a href="properties.html">Properties</a>
+                    <a href="area/fujisawa.html">Area</a>
                     <a href="market.html">Market</a>
-                    <a href="about.html">About</a>
                     <a href="sell.html">Sell</a>
-                    <a href="reins-analyzer/">Analyzer</a>
+                    <a href="blog.html">Column</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="about.html">About</a>
                     <a href="contact.html" class="nav-cta">Contact</a>
                 </nav>
                 <button class="menu-toggle" id="menu-toggle" aria-label="menu">
@@ -87,11 +89,20 @@
                         </ul>
                     </div>
                     <div>
+                        <div class="footer-title">Information</div>
+                        <ul class="footer-nav">
+                            <li><a href="blog.html">コラム</a></li>
+                            <li><a href="faq.html">よくあるご質問</a></li>
+                            <li><a href="area/fujisawa.html">藤沢市の不動産</a></li>
+                            <li><a href="area/chigasaki.html">茅ヶ崎市の不動産</a></li>
+                            <li><a href="area/kamakura.html">鎌倉市の不動産</a></li>
+                        </ul>
+                    </div>
+                    <div>
                         <div class="footer-title">Company</div>
                         <ul class="footer-nav">
                             <li><a href="about.html">会社概要</a></li>
                             <li><a href="market.html">市場データ</a></li>
-                            <li><a href="reins-analyzer/">REINS Analyzer</a></li>
                             <li><a href="contact.html">お問い合わせ</a></li>
                         </ul>
                     </div>
