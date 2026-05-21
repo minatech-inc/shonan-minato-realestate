@@ -1325,6 +1325,41 @@ section {
 .article-meta-row .meta-item { display: inline-flex; align-items: center; gap: 5px; }
 .article-meta-row svg { width: 14px; height: 14px; }
 
+/* 結論段落ボックス（PREP法のP・記事冒頭の文章結論） */
+.article-conclusion {
+    background: linear-gradient(135deg, #ffffff 0%, #f7f4ec 100%);
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    padding: 26px 28px 22px;
+    margin-bottom: 36px;
+    position: relative;
+}
+.article-conclusion-label {
+    position: absolute;
+    top: -13px;
+    left: 22px;
+    background: var(--navy);
+    color: #fff;
+    padding: 5px 16px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+.article-conclusion p {
+    margin: 4px 0 0;
+    color: var(--gray-900);
+    font-size: 0.98rem;
+    line-height: 1.95;
+    font-weight: 500;
+}
+.article-conclusion p strong {
+    color: var(--navy);
+    background: linear-gradient(transparent 62%, #fde68a 62%);
+    padding: 0 2px;
+    font-weight: 700;
+}
+
 /* 要点サマリーボックス */
 .article-summary {
     background: var(--ivory);
