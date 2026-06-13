@@ -44,7 +44,8 @@
                     <a href="blog.html">Column</a>
                     <a href="faq.html">FAQ</a>
                     <a href="about.html">About</a>
-                    <a href="contact.html" class="nav-cta">Contact</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="oheya.html" class="nav-cta">お部屋探し相談</a>
                 </nav>
                 <button class="menu-toggle" id="menu-toggle" aria-label="menu">
                     <span></span><span></span><span></span>
@@ -426,11 +427,43 @@
     }
 
     // ============================================
+    // フローティングCTA（賃貸ヒアリングフォーム導線・全ページ共通）
+    // oheya.html 自体には表示しない
+    // ============================================
+    function injectFloatingCTA() {
+        const path = (location.pathname || '').toLowerCase();
+        if (path.endsWith('/oheya.html') || path === '/oheya' || path.endsWith('oheya.html')) return;
+
+        if (document.querySelector('.smr-fab')) return; // 二重注入防止
+
+        const style = document.createElement('style');
+        style.textContent = `
+            .smr-fab{position:fixed; right:16px; bottom:18px; z-index:9999;
+              display:inline-flex; align-items:center; gap:8px;
+              background:#1a2940; color:#fff; text-decoration:none; font-weight:700; font-size:14px;
+              padding:13px 20px; border-radius:999px; box-shadow:0 6px 20px rgba(26,41,64,.28);
+              border:1px solid rgba(255,255,255,.14);}
+            .smr-fab::before{content:""; width:8px; height:8px; border-radius:50%; background:#3BC0A8;}
+            .smr-fab:hover{background:#22324d;}
+            @media(max-width:600px){.smr-fab{right:12px; bottom:12px; padding:12px 18px; font-size:13.5px;}}
+        `;
+        document.head.appendChild(style);
+
+        const a = document.createElement('a');
+        a.href = '/oheya.html';
+        a.className = 'smr-fab';
+        a.setAttribute('aria-label', 'お部屋探し相談');
+        a.textContent = 'お部屋探し相談';
+        document.body.appendChild(a);
+    }
+
+    // ============================================
     // Init
     // ============================================
     document.addEventListener('DOMContentLoaded', () => {
         injectHeader();
         injectFooter();
+        injectFloatingCTA();
         initHeaderScroll();
         initHeroSlideshow();
         renderFeatured();
