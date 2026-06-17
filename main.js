@@ -40,12 +40,30 @@
                     <a href="properties.html">Properties</a>
                     <a href="area/fujisawa.html">Area</a>
                     <a href="market.html">Market</a>
-                    <a href="sell.html">Sell</a>
                     <a href="blog.html">Column</a>
                     <a href="faq.html">FAQ</a>
                     <a href="about.html">About</a>
-                    <a href="contact.html">Contact</a>
-                    <a href="oheya.html" class="nav-cta">お部屋探し相談</a>
+                    <div class="nav-dropdown" id="nav-consult">
+                        <a href="#" class="nav-cta nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">ご相談 <span class="nav-caret">▾</span></a>
+                        <div class="nav-dropdown-menu" role="menu">
+                            <a href="oheya.html" role="menuitem">
+                                <span class="nav-dd-title">賃貸・お部屋探し相談</span>
+                                <span class="nav-dd-desc">湘南エリアで賃貸物件をお探しの方</span>
+                            </a>
+                            <a href="baibai.html" role="menuitem">
+                                <span class="nav-dd-title">購入・物件探し相談</span>
+                                <span class="nav-dd-desc">マンション・戸建・土地の購入をご検討の方</span>
+                            </a>
+                            <a href="sell.html" role="menuitem">
+                                <span class="nav-dd-title">売却査定・ご相談</span>
+                                <span class="nav-dd-desc">ご所有不動産の売却査定をご希望の方</span>
+                            </a>
+                            <a href="contact.html" role="menuitem">
+                                <span class="nav-dd-title">その他のお問い合わせ</span>
+                                <span class="nav-dd-desc">上記以外のご質問・ご相談</span>
+                            </a>
+                        </div>
+                    </div>
                 </nav>
                 <button class="menu-toggle" id="menu-toggle" aria-label="menu">
                     <span></span><span></span><span></span>
@@ -55,6 +73,27 @@
         const toggle = document.getElementById('menu-toggle');
         const nav = document.getElementById('nav-main');
         toggle?.addEventListener('click', () => nav.classList.toggle('open'));
+
+        // ドロップダウン開閉
+        const dd = document.getElementById('nav-consult');
+        const ddToggle = dd?.querySelector('.nav-dropdown-toggle');
+        ddToggle?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const open = dd.classList.toggle('open');
+            ddToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        document.addEventListener('click', (e) => {
+            if (dd && !dd.contains(e.target)) {
+                dd.classList.remove('open');
+                ddToggle?.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && dd?.classList.contains('open')) {
+                dd.classList.remove('open');
+                ddToggle?.setAttribute('aria-expanded', 'false');
+            }
+        });
     }
 
     function injectFooter() {
@@ -427,12 +466,12 @@
     }
 
     // ============================================
-    // フローティングCTA（賃貸ヒアリングフォーム導線・全ページ共通）
-    // oheya.html 自体には表示しない
+    // フローティングCTA（相談導線・全ページ共通）
+    // oheya.html / baibai.html 自体には表示しない（フォーム本体ページなので重複させない）
     // ============================================
     function injectFloatingCTA() {
         const path = (location.pathname || '').toLowerCase();
-        if (path.endsWith('/oheya.html') || path === '/oheya' || path.endsWith('oheya.html')) return;
+        if (path.endsWith('oheya.html') || path.endsWith('baibai.html') || path === '/oheya' || path === '/baibai') return;
 
         if (document.querySelector('.smr-fab')) return; // 二重注入防止
 
@@ -445,16 +484,44 @@
               border:1px solid rgba(255,255,255,.14);}
             .smr-fab::before{content:""; width:8px; height:8px; border-radius:50%; background:#3BC0A8;}
             .smr-fab:hover{background:#22324d;}
-            @media(max-width:600px){.smr-fab{right:12px; bottom:12px; padding:12px 18px; font-size:13.5px;}}
+            .smr-fab-menu{position:fixed; right:16px; bottom:74px; z-index:9999; display:none; flex-direction:column; gap:6px; background:#fff; border:1px solid #E1E8EF; border-radius:12px; box-shadow:0 12px 30px rgba(26,41,64,.18); padding:8px; min-width:220px;}
+            .smr-fab-menu.open{display:flex;}
+            .smr-fab-menu a{display:block; padding:11px 14px; text-decoration:none; color:#1a2940; font-size:13.5px; font-weight:600; border-radius:8px; transition:background .15s;}
+            .smr-fab-menu a:hover{background:#F1F4F8;}
+            .smr-fab-menu .desc{display:block; font-size:11px; color:#74838F; font-weight:400; margin-top:2px;}
+            @media(max-width:600px){.smr-fab{right:12px; bottom:12px; padding:12px 18px; font-size:13.5px;} .smr-fab-menu{right:12px; bottom:64px;}}
         `;
         document.head.appendChild(style);
 
-        const a = document.createElement('a');
-        a.href = '/oheya.html';
-        a.className = 'smr-fab';
-        a.setAttribute('aria-label', 'お部屋探し相談');
-        a.textContent = 'お部屋探し相談';
-        document.body.appendChild(a);
+        const fab = document.createElement('button');
+        fab.type = 'button';
+        fab.className = 'smr-fab';
+        fab.setAttribute('aria-label', 'ご相談メニュー');
+        fab.style.border = 'none';
+        fab.style.cursor = 'pointer';
+        fab.style.fontFamily = 'inherit';
+        fab.textContent = 'ご相談';
+        document.body.appendChild(fab);
+
+        const menu = document.createElement('div');
+        menu.className = 'smr-fab-menu';
+        menu.innerHTML = `
+            <a href="/oheya.html">賃貸・お部屋探し相談<span class="desc">賃貸物件をお探しの方</span></a>
+            <a href="/baibai.html">購入・物件探し相談<span class="desc">マンション/戸建/土地の購入</span></a>
+            <a href="/sell.html">売却査定・ご相談<span class="desc">ご所有不動産の売却査定</span></a>
+        `;
+        document.body.appendChild(menu);
+
+        fab.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && e.target !== fab) menu.classList.remove('open');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') menu.classList.remove('open');
+        });
     }
 
     // ============================================

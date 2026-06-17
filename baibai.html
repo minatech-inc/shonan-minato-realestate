@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>物件購入ヒアリング｜Shonan Minato Real Estate</title>
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#2F4459; --navy:#33536F; --blue:#3E6E96; --blue-d:#335C80;
+    --teal:#3B7C8B; --teal-soft:#E7F0F2;
+    --page:#F1F4F8; --card:#FFFFFF; --line:#DDE4EC; --label:#566678; --muted:#74838F; --req:#B0613F;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0; background:#F1F4F8;}
+  body{background:var(--page); color:var(--ink);
+    font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased; padding-bottom:96px;}
+  .serif{font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;}
+  .bar{position:sticky; top:0; z-index:20; background:#FFFFFF; border-top:3px solid var(--teal); border-bottom:1px solid #E1E8EF; box-shadow:0 1px 6px rgba(47,68,89,.05);}
+  .bar-in{max-width:660px; margin:0 auto; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .bar img{height:38px; width:auto; display:block}
+  .pill{display:inline-flex; align-items:center; gap:7px; font-size:12.5px; color:var(--teal); background:#fff; border:1px solid #CADBDE; padding:6px 11px; border-radius:999px; white-space:nowrap;}
+  .pill .dot{width:7px; height:7px; border-radius:50%; background:var(--teal);}
+  .pill.saving .dot{background:#C9A227; animation:blink 1s infinite}
+  .pill.error{color:#A8472B; background:#F8ECE8; border-color:#EAD3CC}
+  @keyframes blink{50%{opacity:.25}}
+  .wrap{max-width:660px; margin:0 auto; padding:22px 18px 0;}
+  .hero{padding:14px 2px 22px;}
+  .hero .eyebrow{font-size:12px; letter-spacing:.22em; color:var(--teal); text-transform:uppercase; margin:0 0 8px;}
+  .hero h1{margin:0 0 10px; font-size:25px; font-weight:600; color:var(--navy); letter-spacing:.01em;}
+  .hero p{margin:0; color:var(--label); font-size:14px; max-width:46ch;}
+  .hero .horizon{height:1px; background:linear-gradient(90deg,var(--navy),transparent); margin:16px 0 0; width:120px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px 6px; margin:0 0 14px; box-shadow:0 1px 2px rgba(17,37,61,.04);}
+  .card-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
+  .card-h h2{margin:0; font-size:16.5px; font-weight:600; color:var(--navy); font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;}
+  .tag{font-size:11px; padding:3px 9px; border-radius:999px; white-space:nowrap;}
+  .tag-req{color:#fff; background:#2E6E7D;}
+  .tag-opt{color:#6B7B8C; background:#EEF2F6; border:1px solid #DDE4EC;}
+  .rule{height:1px; background:var(--line); margin:11px 0 16px;}
+  .field{margin:0 0 16px;}
+  .lab{font-size:13.5px; color:var(--label); font-weight:600; margin:0 0 7px;}
+  .req{display:inline-block; font-size:10.5px; color:#fff; background:#2E6E7D; border-radius:5px; padding:1px 8px; margin-left:6px; font-weight:700; letter-spacing:.04em; vertical-align:1px;}
+  .hint{font-size:12px; color:var(--muted); margin:-3px 0 8px;}
+  .ctrl{width:100%; font:inherit; font-size:15px; color:var(--ink); background:#fff; border:1px solid #CDD6E0; border-radius:10px; padding:11px 12px; transition:border-color .15s, box-shadow .15s;}
+  .ctrl:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(47,110,125,.14);}
+  .ctrl.invalid{border-color:#C2553D; box-shadow:0 0 0 3px rgba(194,85,61,.14);}
+  .area{resize:vertical; min-height:48px;}
+  select.ctrl{appearance:none; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke="%2343526A" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>'); background-repeat:no-repeat; background-position:right 14px center; padding-right:34px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{position:relative; display:inline-flex; align-items:center; gap:7px; cursor:pointer; border:1px solid #CDD6E0; background:#fff; border-radius:10px; padding:9px 13px; font-size:14px; color:var(--ink); user-select:none;}
+  .chip input{position:absolute; opacity:0; pointer-events:none;}
+  .chip:has(input:checked){border-color:var(--teal); background:var(--teal-soft); color:var(--navy); font-weight:600;}
+  .pref-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); flex-wrap:wrap;}
+  .pref-row:last-child{border-bottom:none;}
+  .pref-name{font-size:14px;}
+  .seg{display:inline-flex; border:1px solid #CDD6E0; border-radius:9px; overflow:hidden;}
+  .seg label{position:relative; padding:7px 11px; font-size:12.5px; cursor:pointer; background:#fff; border-left:1px solid var(--line); color:var(--label); user-select:none;}
+  .seg label:first-child{border-left:none;}
+  .seg input{position:absolute; opacity:0; pointer-events:none;}
+  .seg label:has(input:checked){background:var(--teal-soft); color:var(--navy); font-weight:600;}
+  .consent{display:flex; gap:11px; align-items:flex-start; background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin:6px 0 18px; font-size:13px; color:var(--label);}
+  .consent.invalid{border-color:#C2553D;}
+  .consent input{margin-top:3px; width:18px; height:18px; accent-color:var(--teal); flex:none;}
+  .consent a{color:var(--teal);}
+  .actions{position:fixed; left:0; right:0; bottom:0; z-index:30; background:#FFFFFF; border-top:3px solid var(--teal); box-shadow:0 -1px 8px rgba(47,68,89,.06); padding:12px 16px calc(12px + env(safe-area-inset-bottom));}
+  .actions-in{max-width:660px; margin:0 auto; display:flex; gap:10px;}
+  .btn{font:inherit; font-size:14.5px; font-weight:600; border-radius:11px; padding:13px 10px; cursor:pointer; border:1px solid transparent;}
+  .btn-primary{flex:1; background:var(--blue); color:#fff;}
+  .btn-primary:active{background:var(--blue-d)}
+  .btn-primary:disabled{opacity:.6; cursor:default}
+  .btn-ghost{background:#fff; color:var(--navy); border-color:#CDD6E0; flex:0 0 auto; padding:13px 16px;}
+  .foot{text-align:center; color:var(--muted); font-size:11.5px; padding:6px 0 4px;}
+  .toast{position:fixed; left:50%; bottom:84px; transform:translateX(-50%) translateY(10px); opacity:0; background:var(--ink); color:#fff; font-size:13px; padding:10px 16px; border-radius:10px; transition:.25s; pointer-events:none; z-index:40; max-width:90%; text-align:center;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .thanks{min-height:70vh; display:flex; align-items:center; justify-content:center; padding:40px 18px;}
+  .thanks-card{max-width:440px; text-align:center;}
+  .check{width:64px; height:64px; border-radius:50%; background:var(--teal-soft); color:var(--teal); border:1px solid #CFE0E3; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 18px;}
+  .thanks-card h2{font-size:23px; color:var(--navy); margin:0 0 10px;}
+  .thanks-card p{color:var(--label); font-size:14.5px; margin:0 0 8px;}
+  .thanks-no{color:var(--teal); font-weight:600;}
+  .thanks-card .btn{margin-top:22px; display:inline-block; min-width:200px;}
+  @media print{.bar,.actions,.toast{display:none!important} body{background:#fff;padding:0} .card{break-inside:avoid; box-shadow:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div class="bar-in">
+      <img src="logo.svg" alt="Shonan Minato Real Estate">
+      <span class="pill" id="pill"><span class="dot"></span><span id="pill-t">下書き自動保存</span></span>
+    </div>
+  </div>
+
+  <div class="wrap" id="wrap">
+    <div class="hero" id="hero">
+      <p class="eyebrow">Purchase Hearing</p>
+      <h1 class="serif">物件購入 ヒアリングシート</h1>
+      <p>ご希望の購入条件をお聞かせください。入力内容はこの端末に自動保存され、戻る・再読み込みをしても消えません。途中で閉じても、後から続きを入力できます。</p>
+      <div class="horizon"></div>
+    </div>
+
+    <form id="form" autocomplete="off">
+      <section class="card"><header class="card-h"><h2>基本情報</h2><span class="tag tag-req">必須</span></header><div class="rule"></div><div class="field"><div class="lab">お名前 <span class="req">必須</span></div><input class="ctrl" type="text" name="name" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">フリガナ </div><input class="ctrl" type="text" name="kana" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">電話番号 <span class="req">必須</span></div><input class="ctrl" type="tel" name="tel" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">メールアドレス <span class="req">必須</span></div><input class="ctrl" type="email" name="mail" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">ご連絡可能な時間帯 </div><p class="hint">例：平日18時以降 / 土日終日</p><input class="ctrl" type="text" name="contact_time" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">ご希望の連絡方法 </div><div class="chips"><label class="chip"><input type="radio" name="contact_way" value="電話"><span>電話</span></label><label class="chip"><input type="radio" name="contact_way" value="メール"><span>メール</span></label><label class="chip"><input type="radio" name="contact_way" value="LINE"><span>LINE</span></label></div></div></section><section class="card"><header class="card-h"><h2>検討状況・購入タイミング</h2><span class="tag tag-req">必須</span></header><div class="rule"></div><div class="field"><div class="lab">購入希望時期 <span class="req">必須</span></div><div class="chips"><label class="chip"><input type="radio" name="buy_when" value="即・3か月以内"><span>即・3か月以内</span></label><label class="chip"><input type="radio" name="buy_when" value="半年以内"><span>半年以内</span></label><label class="chip"><input type="radio" name="buy_when" value="1年以内"><span>1年以内</span></label><label class="chip"><input type="radio" name="buy_when" value="良い物件があれば"><span>良い物件があれば</span></label><label class="chip"><input type="radio" name="buy_when" value="未定"><span>未定</span></label></div></div><div class="field"><div class="lab">探し始めた時期 </div><p class="hint">例：先月から / 半年前から</p><input class="ctrl" type="text" name="search_since" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">購入動機 </div><div class="chips"><label class="chip"><input type="checkbox" name="motive" value="住替え"><span>住替え</span></label><label class="chip"><input type="checkbox" name="motive" value="結婚"><span>結婚</span></label><label class="chip"><input type="checkbox" name="motive" value="出産・家族増"><span>出産・家族増</span></label><label class="chip"><input type="checkbox" name="motive" value="子の独立"><span>子の独立</span></label><label class="chip"><input type="checkbox" name="motive" value="転勤・転職"><span>転勤・転職</span></label><label class="chip"><input type="checkbox" name="motive" value="老後の住まい"><span>老後の住まい</span></label><label class="chip"><input type="checkbox" name="motive" value="相続・贈与"><span>相続・贈与</span></label><label class="chip"><input type="checkbox" name="motive" value="投資・資産形成"><span>投資・資産形成</span></label></div></div><div class="field"><div class="lab">他社にも相談中ですか </div><div class="chips"><label class="chip"><input type="radio" name="other_agents" value="はい"><span>はい</span></label><label class="chip"><input type="radio" name="other_agents" value="いいえ"><span>いいえ</span></label></div></div></section><section class="card"><header class="card-h"><h2>ご予算・資金計画</h2><span class="tag tag-req">必須</span></header><div class="rule"></div><div class="field"><div class="lab">物件購入予算（総額上限） <span class="req">必須</span></div><p class="hint">例：4,500万円 / 5,000万円まで</p><input class="ctrl" type="text" name="budget_total" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">月々の返済希望額 </div><p class="hint">住宅ローン利用予定の場合のみ</p><input class="ctrl" type="text" name="monthly_pay" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">自己資金（頭金） <span class="req">必須</span></div><p class="hint">例：500万円 / なし</p><input class="ctrl" type="text" name="own_funds" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">住宅ローン利用予定 </div><div class="chips"><label class="chip"><input type="radio" name="loan" value="利用する"><span>利用する</span></label><label class="chip"><input type="radio" name="loan" value="検討中"><span>検討中</span></label><label class="chip"><input type="radio" name="loan" value="現金"><span>現金</span></label><label class="chip"><input type="radio" name="loan" value="未定"><span>未定</span></label></div></div><div class="field"><div class="lab">事前審査の経験 </div><div class="chips"><label class="chip"><input type="radio" name="prescreening" value="通過済み"><span>通過済み</span></label><label class="chip"><input type="radio" name="prescreening" value="申込中"><span>申込中</span></label><label class="chip"><input type="radio" name="prescreening" value="まだ"><span>まだ</span></label></div></div><div class="field"><div class="lab">親族からの資金援助 </div><p class="hint">贈与・借入の予定があれば（金額の目安）</p><input class="ctrl" type="text" name="family_aid" autocomplete="off" inputmode="text"></div></section><section class="card"><header class="card-h"><h2>物件希望条件</h2><span class="tag tag-req">必須</span></header><div class="rule"></div><div class="field"><div class="lab">物件種別 <span class="req">必須</span></div><div class="chips"><label class="chip"><input type="checkbox" name="ptype" value="マンション"><span>マンション</span></label><label class="chip"><input type="checkbox" name="ptype" value="戸建"><span>戸建</span></label><label class="chip"><input type="checkbox" name="ptype" value="土地"><span>土地</span></label><label class="chip"><input type="checkbox" name="ptype" value="投資用一棟"><span>投資用一棟</span></label></div></div><div class="field"><div class="lab">新築 or 中古 </div><div class="chips"><label class="chip"><input type="radio" name="new_used" value="新築希望"><span>新築希望</span></label><label class="chip"><input type="radio" name="new_used" value="中古希望"><span>中古希望</span></label><label class="chip"><input type="radio" name="new_used" value="リノベ前提"><span>リノベ前提</span></label><label class="chip"><input type="radio" name="new_used" value="こだわらない"><span>こだわらない</span></label></div></div><div class="field"><div class="lab">希望エリア <span class="req">必須</span></div><p class="hint">沿線・駅・市区町村（例：藤沢駅徒歩15分以内 / 茅ヶ崎市・鎌倉市）</p><input class="ctrl" type="text" name="area" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">駅からの徒歩分数（許容範囲） </div><p class="hint">例：徒歩10分以内 / バス可</p><input class="ctrl" type="text" name="walk" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">間取り </div><select class="ctrl" name="layout"><option value="">選択してください</option><option value="1LDK">1LDK</option><option value="2LDK">2LDK</option><option value="3LDK">3LDK</option><option value="4LDK以上">4LDK以上</option><option value="こだわらない">こだわらない</option></select></div><div class="field"><div class="lab">専有面積 / 延床面積 </div><p class="hint">例：70㎡以上 / 100㎡以上</p><input class="ctrl" type="text" name="size" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">築年数の許容 </div><div class="chips"><label class="chip"><input type="radio" name="age" value="築5年以内"><span>築5年以内</span></label><label class="chip"><input type="radio" name="age" value="築15年以内"><span>築15年以内</span></label><label class="chip"><input type="radio" name="age" value="築30年以内"><span>築30年以内</span></label><label class="chip"><input type="radio" name="age" value="こだわらない"><span>こだわらない</span></label></div></div><div class="field"><div class="lab">駐車場 </div><div class="chips"><label class="chip"><input type="radio" name="parking" value="必須"><span>必須</span></label><label class="chip"><input type="radio" name="parking" value="あれば良い"><span>あれば良い</span></label><label class="chip"><input type="radio" name="parking" value="不要"><span>不要</span></label></div></div></section><section class="card"><header class="card-h"><h2>家族・入居者構成</h2><span class="tag tag-req">必須</span></header><div class="rule"></div><div class="field"><div class="lab">入居予定人数 <span class="req">必須</span></div><input class="ctrl" type="number" name="people" autocomplete="off" inputmode="numeric"></div><div class="field"><div class="lab">ご家族の続柄 </div><div class="chips"><label class="chip"><input type="radio" name="relation" value="単身"><span>単身</span></label><label class="chip"><input type="radio" name="relation" value="夫婦"><span>夫婦</span></label><label class="chip"><input type="radio" name="relation" value="家族"><span>家族</span></label><label class="chip"><input type="radio" name="relation" value="二世帯"><span>二世帯</span></label></div></div><div class="field"><div class="lab">お子様の有無・年齢 </div><input class="ctrl" type="text" name="kids" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">将来のライフプラン </div><p class="hint">例：出産予定あり / 共働き継続 / 親との同居予定</p><input class="ctrl" type="text" name="future_plan" autocomplete="off" inputmode="text"></div></section><section class="card"><header class="card-h"><h2>現在のお住まい</h2><span class="tag tag-req">必須</span></header><div class="rule"></div><div class="field"><div class="lab">現在のお住まい <span class="req">必須</span></div><div class="chips"><label class="chip"><input type="radio" name="current_home" value="賃貸"><span>賃貸</span></label><label class="chip"><input type="radio" name="current_home" value="持ち家"><span>持ち家</span></label><label class="chip"><input type="radio" name="current_home" value="実家"><span>実家</span></label><label class="chip"><input type="radio" name="current_home" value="社宅"><span>社宅</span></label></div></div><div class="field"><div class="lab">賃貸の方：家賃・更新時期 </div><p class="hint">例：月12万 / 来年3月更新</p><input class="ctrl" type="text" name="rent_now" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">持家の方：売却の必要性 </div><div class="chips"><label class="chip"><input type="radio" name="sell_need" value="売却して購入"><span>売却して購入</span></label><label class="chip"><input type="radio" name="sell_need" value="残して購入"><span>残して購入</span></label><label class="chip"><input type="radio" name="sell_need" value="未定"><span>未定</span></label></div></div><div class="field"><div class="lab">持家の方：住宅ローン残債 </div><p class="hint">おおよその金額</p><input class="ctrl" type="text" name="loan_balance" autocomplete="off" inputmode="text"></div></section><section class="card"><header class="card-h"><h2>申込者情報（審査関連）</h2><span class="tag tag-opt">任意</span></header><div class="rule"></div><p class="hint" style="margin:-4px 0 12px;">差し支えない範囲でご記入ください。事前のローン審査見通しに役立ちます。</p><div class="field"><div class="lab">申込者の年齢 </div><input class="ctrl" type="text" name="age_applicant" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">ご職業・勤務先 </div><p class="hint">業種・職種など</p><input class="ctrl" type="text" name="job" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">雇用形態 </div><div class="chips"><label class="chip"><input type="radio" name="employment" value="正社員"><span>正社員</span></label><label class="chip"><input type="radio" name="employment" value="契約・派遣"><span>契約・派遣</span></label><label class="chip"><input type="radio" name="employment" value="公務員"><span>公務員</span></label><label class="chip"><input type="radio" name="employment" value="自営業"><span>自営業</span></label><label class="chip"><input type="radio" name="employment" value="法人代表"><span>法人代表</span></label></div></div><div class="field"><div class="lab">勤続年数 </div><input class="ctrl" type="text" name="years" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">ご年収（おおよそ） </div><input class="ctrl" type="text" name="income" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">配偶者の収入合算 </div><div class="chips"><label class="chip"><input type="radio" name="spouse_income" value="合算する"><span>合算する</span></label><label class="chip"><input type="radio" name="spouse_income" value="ペアローン希望"><span>ペアローン希望</span></label><label class="chip"><input type="radio" name="spouse_income" value="単独"><span>単独</span></label><label class="chip"><input type="radio" name="spouse_income" value="未定"><span>未定</span></label></div></div><div class="field"><div class="lab">他の借入の有無 </div><p class="hint">カーローン・教育ローン・カード分割など</p><input class="ctrl" type="text" name="other_loans" autocomplete="off" inputmode="text"></div></section><section class="card"><header class="card-h"><h2>重視する条件・周辺環境</h2><span class="tag tag-opt">任意</span></header><div class="rule"></div><div class="field"><div class="lab">重視する周辺環境（複数選択可） </div><div class="chips"><label class="chip"><input type="checkbox" name="surroundings" value="スーパー・コンビニ"><span>スーパー・コンビニ</span></label><label class="chip"><input type="checkbox" name="surroundings" value="病院が近い"><span>病院が近い</span></label><label class="chip"><input type="checkbox" name="surroundings" value="学校・保育園"><span>学校・保育園</span></label><label class="chip"><input type="checkbox" name="surroundings" value="治安・静けさ"><span>治安・静けさ</span></label><label class="chip"><input type="checkbox" name="surroundings" value="海・自然が近い"><span>海・自然が近い</span></label><label class="chip"><input type="checkbox" name="surroundings" value="商業施設・飲食店"><span>商業施設・飲食店</span></label><label class="chip"><input type="checkbox" name="surroundings" value="災害ハザードが低い"><span>災害ハザードが低い</span></label></div></div><div class="field"><div class="lab">通勤・通学先と所要時間の許容 </div><input class="ctrl" type="text" name="commute" autocomplete="off" inputmode="text"></div><div class="field"><div class="lab">在宅勤務の有無 </div><div class="chips"><label class="chip"><input type="radio" name="remote" value="あり"><span>あり</span></label><label class="chip"><input type="radio" name="remote" value="なし"><span>なし</span></label><label class="chip"><input type="radio" name="remote" value="ハイブリッド"><span>ハイブリッド</span></label></div></div><div class="field"><div class="lab">ペットの飼育予定 </div><p class="hint">種類・頭数</p><input class="ctrl" type="text" name="pet" autocomplete="off" inputmode="text"></div></section><section class="card"><header class="card-h"><h2>優先順位・ご希望</h2><span class="tag tag-opt">任意</span></header><div class="rule"></div><div class="field"><div class="lab">絶対に叶えたい条件（最優先） </div><textarea class="ctrl area" name="must" rows="2"></textarea></div><div class="field"><div class="lab">妥協できる条件 </div><textarea class="ctrl area" name="compromise" rows="2"></textarea></div><div class="field"><div class="lab">絶対に避けたい条件（NG） </div><textarea class="ctrl area" name="ng" rows="2"></textarea></div><div class="field"><div class="lab">内見希望日時の候補 </div><p class="hint">例：今週末の午後 など</p><textarea class="ctrl area" name="viewing" rows="2"></textarea></div></section><section class="card"><header class="card-h"><h2>当社について</h2><span class="tag tag-opt">任意</span></header><div class="rule"></div><div class="field"><div class="lab">当社を知ったきっかけ </div><div class="chips"><label class="chip"><input type="radio" name="route" value="SUUMO"><span>SUUMO</span></label><label class="chip"><input type="radio" name="route" value="自社HP"><span>自社HP</span></label><label class="chip"><input type="radio" name="route" value="紹介"><span>紹介</span></label><label class="chip"><input type="radio" name="route" value="看板"><span>看板</span></label><label class="chip"><input type="radio" name="route" value="SNS"><span>SNS</span></label><label class="chip"><input type="radio" name="route" value="検索"><span>検索</span></label><label class="chip"><input type="radio" name="route" value="その他"><span>その他</span></label></div></div></section>
+      <label class="consent" id="consent-box">
+        <input type="checkbox" name="consent" value="同意">
+        <span>個人情報の取り扱いに同意します。入力情報は物件のご紹介・ご連絡および売買契約手続きのみに利用し、<a href="/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に基づき管理します。</span>
+      </label>
+    </form>
+    <p class="foot" id="foot">Shonan Minato Real Estate（MinaTech株式会社）／ 神奈川県知事（1）第32624号</p>
+  </div>
+
+  <div class="thanks" id="thanks" hidden>
+    <div class="thanks-card">
+      <div class="check">✓</div>
+      <h2 class="serif">送信しました</h2>
+      <p>お問い合わせありがとうございます。担当より追ってご連絡いたします。</p>
+      <p class="thanks-no" id="thanks-no"></p>
+      <a class="btn btn-primary" href="/properties.html">物件を見る</a>
+      <a class="btn btn-ghost" href="https://lin.ee/tagejdED" target="_blank" rel="noopener" style="display:inline-block; min-width:200px; text-align:center; text-decoration:none;">LINEで相談する</a>
+      <button class="btn btn-ghost" id="again" type="button" style="min-width:200px;">新しく入力する</button>
+    </div>
+  </div>
+
+  <div class="actions" id="actions">
+    <div class="actions-in">
+      <button class="btn btn-ghost" id="clear" type="button">消去</button>
+      <button class="btn btn-primary" id="send" type="button">送信する</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  // ▼ 売買用・台帳に書き込むWebアプリURL（Apps Scriptのデプロイ後に貼り付け）
+  // 未設定時は内容を自動でクリップボードへコピー＋テスト用サンクス画面表示
+  const WEBAPP_URL = '__WEBAPP_BAIBAI__';
+  const FORM_TOKEN = '__FORM_TOKEN_BAIBAI__';
+
+  const KEY = 'minatech-baibai-draft-v1';
+  const REQUIRED = ["name", "tel", "mail", "buy_when", "budget_total", "own_funds", "area", "people", "current_home"];
+  const form = document.getElementById('form');
+  const pill = document.getElementById('pill');
+  const pillT = document.getElementById('pill-t');
+
+  const store = {
+    async get(k){
+      if (window.storage){ try { const r = await window.storage.get(k); return r ? r.value : null; } catch(e){ return null; } }
+      try { return localStorage.getItem(k); } catch(e){ return null; }
+    },
+    async set(k, v){
+      if (window.storage){ await window.storage.set(k, v, false); return; }
+      try { localStorage.setItem(k, v); } catch(e){}
+    },
+    async del(k){
+      if (window.storage){ try { await window.storage.delete(k, false); } catch(e){} return; }
+      try { localStorage.removeItem(k); } catch(e){}
+    }
+  };
+
+  function collect(){
+    const d = {};
+    form.querySelectorAll('[name]').forEach(el => {
+      if (el.type === 'radio'){ if (el.checked) d[el.name] = el.value; }
+      else if (el.type === 'checkbox'){ if (!Array.isArray(d[el.name])) d[el.name] = []; if (el.checked) d[el.name].push(el.value); }
+      else d[el.name] = el.value;
+    });
+    return d;
+  }
+  function apply(d){
+    form.querySelectorAll('[name]').forEach(el => {
+      const v = d[el.name];
+      if (v === undefined || v === null) return;
+      if (el.type === 'radio') el.checked = (el.value === v);
+      else if (el.type === 'checkbox') el.checked = Array.isArray(v) && v.includes(el.value);
+      else el.value = v;
+    });
+  }
+
+  function fmt(){ const n=new Date(); const p=x=>('0'+x).slice(-2); return p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds()); }
+  function setPill(s){
+    pill.classList.remove('saving','error');
+    if (s==='saving'){ pill.classList.add('saving'); pillT.textContent='保存中…'; }
+    else if (s==='saved'){ pillT.textContent='下書き保存済み ✓ '+fmt(); }
+    else if (s==='restored'){ pillT.textContent='前回の続きを復元しました'; }
+    else if (s==='error'){ pill.classList.add('error'); pillT.textContent='保存できませんでした'; }
+    else pillT.textContent='下書き自動保存';
+  }
+
+  let timer;
+  async function save(){ setPill('saving'); try { await store.set(KEY, JSON.stringify(collect())); setPill('saved'); } catch(e){ setPill('error'); } }
+  function schedule(){ clearTimeout(timer); setPill('saving'); timer = setTimeout(save, 500); }
+  form.addEventListener('input', schedule);
+  form.addEventListener('change', schedule);
+  form.addEventListener('input', e => { if (e.target.classList) e.target.classList.remove('invalid'); document.getElementById('consent-box').classList.remove('invalid'); });
+  window.addEventListener('pagehide', () => { try { store.set(KEY, JSON.stringify(collect())); } catch(e){} });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+
+  (async function init(){
+    const raw = await store.get(KEY);
+    if (raw){ try { apply(JSON.parse(raw)); setPill('restored'); } catch(e){ setPill(); } }
+    else setPill();
+  })();
+
+  let tt;
+  function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2000); }
+
+  function buildPayload(){
+    const d = collect();
+    const motive = Array.isArray(d.motive) ? d.motive.join('、') : '';
+    const ptype = Array.isArray(d.ptype) ? d.ptype.join('、') : '';
+    const sur = Array.isArray(d.surroundings) ? d.surroundings.join('、') : '';
+    const name = (d.name||'') + (d.kana ? '（'+d.kana+'）' : '');
+    return {
+      token: FORM_TOKEN, form_type: '売買・購入',
+      route:d.route||'', name, tel:d.tel||'', mail:d.mail||'', contact_time:d.contact_time||'', contact_way:d.contact_way||'',
+      buy_when:d.buy_when||'', search_since:d.search_since||'', motive, other_agents:d.other_agents||'',
+      budget_total:d.budget_total||'', monthly_pay:d.monthly_pay||'', own_funds:d.own_funds||'', loan:d.loan||'', prescreening:d.prescreening||'', family_aid:d.family_aid||'',
+      ptype, new_used:d.new_used||'', area:d.area||'', walk:d.walk||'', layout:d.layout||'', size:d.size||'', age:d.age||'', parking:d.parking||'',
+      people:d.people||'', relation:d.relation||'', kids:d.kids||'', future_plan:d.future_plan||'',
+      current_home:d.current_home||'', rent_now:d.rent_now||'', sell_need:d.sell_need||'', loan_balance:d.loan_balance||'',
+      age_applicant:d.age_applicant||'', job:d.job||'', employment:d.employment||'', years:d.years||'', income:d.income||'', spouse_income:d.spouse_income||'', other_loans:d.other_loans||'',
+      surroundings:sur, commute:d.commute||'', remote:d.remote||'', pet:d.pet||'',
+      must:d.must||'', compromise:d.compromise||'', ng:d.ng||'', viewing:d.viewing||'',
+      consent:d.consent?'あり':''
+    };
+  }
+
+  function validate(){
+    let first=null;
+    REQUIRED.forEach(k => {
+      const el = form.querySelector('[name="'+k+'"]');
+      if (el && !String(el.value).trim()){ el.classList.add('invalid'); if(!first) first=el; }
+    });
+    // ptype は checkbox 複数なので別判定
+    const ptypeChecked = form.querySelectorAll('[name="ptype"]:checked').length > 0;
+    if (!ptypeChecked){
+      // 最初のptypeチェックボックスの親chipに無効印を付ける
+      const elp = form.querySelector('[name="ptype"]');
+      if (elp){ const chip = elp.closest('.chip'); if (chip) chip.classList.add('invalid'); if(!first) first=elp; }
+    }
+    const consent = form.querySelector('[name="consent"]');
+    if (!consent.checked){ document.getElementById('consent-box').classList.add('invalid'); if(!first) first=document.getElementById('consent-box'); }
+    if (first){ first.scrollIntoView({behavior:'smooth', block:'center'}); }
+    return !first;
+  }
+
+  function showThanks(no, demo){
+    ['hero','form','foot','actions'].forEach(id => document.getElementById(id).style.display='none');
+    const t = document.getElementById('thanks'); t.hidden=false;
+    document.getElementById('thanks-no').textContent = no ? ('受付番号：'+no) : (demo ? '（送信先が未設定のため、内容をコピーしました）' : '');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  async function copyText(text){
+    try { await navigator.clipboard.writeText(text); }
+    catch(e){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  }
+  function payloadToText(p){
+    const L = {form_type:'種別', route:'きっかけ', name:'氏名', tel:'電話', mail:'メール', contact_time:'連絡可能時間', contact_way:'連絡方法',
+      buy_when:'購入希望時期', search_since:'探し始めた時期', motive:'購入動機', other_agents:'他社相談',
+      budget_total:'物件購入予算', monthly_pay:'月々返済希望', own_funds:'自己資金', loan:'住宅ローン', prescreening:'事前審査', family_aid:'資金援助',
+      ptype:'物件種別', new_used:'新築/中古', area:'希望エリア', walk:'駅徒歩', layout:'間取り', size:'面積', age:'築年数', parking:'駐車場',
+      people:'入居人数', relation:'続柄', kids:'お子様', future_plan:'ライフプラン',
+      current_home:'現住居', rent_now:'現家賃・更新', sell_need:'売却の要否', loan_balance:'住宅ローン残債',
+      age_applicant:'年齢', job:'勤務先', employment:'雇用形態', years:'勤続年数', income:'年収', spouse_income:'配偶者収入', other_loans:'他借入',
+      surroundings:'周辺環境', commute:'通勤通学', remote:'在宅勤務', pet:'ペット',
+      must:'譲れない条件', compromise:'妥協可', ng:'NG条件', viewing:'内見希望', consent:'同意'};
+    const lines=['■ 売買購入ヒアリング　'+new Date().toLocaleString('ja-JP')];
+    Object.keys(L).forEach(k=>{ if(p[k]) lines.push(L[k]+'：'+p[k]); });
+    return lines.join('\n');
+  }
+
+  const sendBtn = document.getElementById('send');
+  sendBtn.addEventListener('click', async () => {
+    if (!validate()){ toast('未入力の必須項目があります'); return; }
+    sendBtn.disabled = true; sendBtn.textContent = '送信中…';
+    const payload = buildPayload();
+    try {
+      if (WEBAPP_URL && WEBAPP_URL.indexOf('ここに') < 0 && WEBAPP_URL.indexOf('__WEBAPP') < 0){
+        const res = await fetch(WEBAPP_URL, { method:'POST', body: JSON.stringify(payload) });
+        let j = {}; try { j = await res.json(); } catch(e){ j = {ok:true}; }
+        if (j && j.ok === false) throw new Error(j.error || 'server');
+        await store.del(KEY);
+        showThanks(j.no || '');
+      } else {
+        await copyText(payloadToText(payload));
+        await store.del(KEY);
+        showThanks('', true);
+      }
+    } catch(e){
+      toast('送信に失敗しました。通信環境をご確認のうえ、もう一度お試しください');
+      sendBtn.disabled = false; sendBtn.textContent = '送信する';
+    }
+  });
+
+  document.getElementById('again').addEventListener('click', async () => {
+    form.reset();
+    form.querySelectorAll('[name]').forEach(el => { if (el.type==='checkbox'||el.type==='radio') el.checked=false; });
+    await store.del(KEY);
+    document.getElementById('thanks').hidden = true;
+    ['hero','form','foot','actions'].forEach(id => document.getElementById(id).style.display='');
+    sendBtn.disabled=false; sendBtn.textContent='送信する';
+    setPill();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  document.getElementById('clear').addEventListener('click', async () => {
+    if (!confirm('入力内容を消去して新規入力に戻します。よろしいですか？')) return;
+    form.reset();
+    form.querySelectorAll('[name]').forEach(el => { if (el.type==='checkbox'||el.type==='radio') el.checked=false; });
+    await store.del(KEY); setPill(); toast('入力内容を消去しました');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+</script>
+</body>
+</html>

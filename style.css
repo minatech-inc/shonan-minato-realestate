@@ -246,6 +246,115 @@ section {
     background: var(--gold-light);
 }
 
+/* ============================================
+   Navigation Dropdown (ご相談▾)
+   ============================================ */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.nav-dropdown-toggle {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.nav-caret {
+    font-size: 0.7em;
+    transition: transform 0.2s ease;
+}
+.nav-dropdown.open .nav-caret {
+    transform: rotate(180deg);
+}
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 280px;
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    z-index: 100;
+}
+.nav-dropdown.open .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.nav-dropdown-menu a {
+    display: block !important;
+    padding: 12px 18px !important;
+    text-decoration: none !important;
+    color: var(--gray-900) !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    font-weight: 500 !important;
+    transition: background 0.15s ease;
+}
+.nav-dropdown-menu a::after {
+    display: none !important;
+}
+.nav-dropdown-menu a:hover {
+    background: var(--ivory) !important;
+    color: var(--navy) !important;
+}
+.nav-dd-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gray-900);
+    margin-bottom: 3px;
+}
+.nav-dropdown-menu a:hover .nav-dd-title {
+    color: var(--navy);
+}
+.nav-dd-desc {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+/* モバイル: ドロップダウンを開閉式に */
+@media (max-width: 768px) {
+    .nav-dropdown {
+        width: 100%;
+    }
+    .nav-dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        background: rgba(255,255,255,0.05);
+        margin-top: 8px;
+        padding: 0;
+        display: none;
+        width: 100%;
+    }
+    .nav-dropdown.open .nav-dropdown-menu {
+        display: block;
+    }
+    .nav-dropdown-menu a {
+        color: #fff !important;
+        padding: 12px 20px !important;
+    }
+    .nav-dd-title {
+        color: #fff;
+    }
+    .nav-dd-desc {
+        color: rgba(255,255,255,0.65);
+    }
+}
+
 .menu-toggle {
     display: none;
     background: none;
