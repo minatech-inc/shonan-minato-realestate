@@ -34,7 +34,7 @@
         el.innerHTML = `
             <div class="header-inner">
                 <a href="./" class="header-logo">
-                    <img src="logo.svg" alt="Shonan Minato REAL ESTATE">
+                    <img src="/logo.svg" alt="Shonan Minato REAL ESTATE">
                 </a>
                 <nav class="nav-main" id="nav-main">
                     <a href="properties.html">Properties</a>
@@ -105,7 +105,7 @@
                 <div class="footer-grid">
                     <div>
                         <div class="footer-logo">
-                            <img src="logo.svg" alt="${SITE.name}">
+                            <img src="/logo.svg" alt="${SITE.name}">
                         </div>
                         <p class="footer-about">
                             湘南から、資産と暮らしをデザインする。<br>
