@@ -13,7 +13,7 @@
     const SITE = {
         name: 'Shonan Minato REAL ESTATE',
         nameFull: 'MinaTech株式会社',
-        tel: '0467-28-7603',
+        tel: '0466-96-0313',
         email: 'isoya.h@minatech1210.com',
         address: '〒251-0055 神奈川県藤沢市南藤沢3-12 クリオ藤沢駅前 7階',
         license: '宅地建物取引業：神奈川県知事（1）第32624号',
@@ -226,10 +226,10 @@
                             errMsg += ' ' + j.errors.map(e => e.message).join(' / ');
                         }
                     } catch (_) {}
-                    showStatus('error', errMsg + ' お電話（0467-28-7603）またはメール（isoya.h@minatech1210.com）でも受け付けております。');
+                    showStatus('error', errMsg + ' お電話（0466-96-0313）またはメール（isoya.h@minatech1210.com）でも受け付けております。');
                 }
             } catch (err) {
-                showStatus('error', '通信エラーが発生しました。インターネット接続をご確認のうえ再度お試しください。お電話（0467-28-7603）でも承ります。');
+                showStatus('error', '通信エラーが発生しました。インターネット接続をご確認のうえ再度お試しください。お電話（0466-96-0313）でも承ります。');
             } finally {
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = orig; }
             }
