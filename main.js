@@ -43,6 +43,7 @@
                     <a href="blog.html">Column</a>
                     <a href="faq.html">FAQ</a>
                     <a href="about.html">About</a>
+                    <a href="recruit.html">Recruit</a>
                     <div class="nav-dropdown" id="nav-consult">
                         <a href="#" class="nav-cta nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">ご相談 <span class="nav-caret">▾</span></a>
                         <div class="nav-dropdown-menu" role="menu">
@@ -471,7 +472,7 @@
     // ============================================
     function injectFloatingCTA() {
         const path = (location.pathname || '').toLowerCase();
-        if (path.endsWith('oheya.html') || path.endsWith('baibai.html') || path === '/oheya' || path === '/baibai') return;
+        if (path.endsWith('oheya.html') || path.endsWith('baibai.html') || path.endsWith('recruit.html') || path === '/oheya' || path === '/baibai' || path === '/recruit') return;
 
         if (document.querySelector('.smr-fab')) return; // 二重注入防止
 
