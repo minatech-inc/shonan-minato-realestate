@@ -266,163 +266,6 @@
     }
 
     // ============================================
-    // Property rendering
-    // ============================================
-    function formatPrice(p) {
-        if (!p) return '—';
-        if (p.rentType === '賃貸') {
-            return `${p.price.toLocaleString()}<small>${p.priceUnit}</small>`;
-        }
-        return `${p.price.toLocaleString()}<small>${p.priceUnit}</small>`;
-    }
-
-    function propertyCardHTML(p) {
-        const badges = [];
-        if (p.tags) p.tags.forEach(t => {
-            let cls = 'property-badge';
-            if (t === 'NEW') cls += ' new';
-            if (t === 'DEMO') cls += ' demo';
-            badges.push(`<span class="${cls}">${t}</span>`);
-        });
-        badges.push('<span class="property-badge demo">DEMO</span>');
-
-        const specs = [];
-        if (p.layout) specs.push(`<span><span class="property-spec-label">間取</span>${p.layout}</span>`);
-        if (p.size) specs.push(`<span><span class="property-spec-label">面積</span>${p.size}㎡</span>`);
-        if (p.yield) specs.push(`<span><span class="property-spec-label">利回り</span>${p.yield}%</span>`);
-        if (p.built) specs.push(`<span><span class="property-spec-label">築年</span>${p.built}</span>`);
-
-        return `
-            <a href="property.html?id=${p.id}" class="property-card">
-                <div class="property-image" style="background-image: url('${p.image}')">
-                    <div class="property-badges">${badges.join('')}</div>
-                </div>
-                <div class="property-body">
-                    <div class="property-category">${p.categoryLabel} · ${p.area}</div>
-                    <div class="property-name">${p.name}</div>
-                    <div class="property-price">${formatPrice(p)}</div>
-                    <div class="property-specs">${specs.join('')}</div>
-                </div>
-            </a>
-        `;
-    }
-
-    async function loadProperties() {
-        try {
-            const res = await fetch('data/properties-demo.json');
-            const data = await res.json();
-            return data.properties || [];
-        } catch (e) {
-            console.warn('物件データ読込失敗', e);
-            return [];
-        }
-    }
-
-    async function renderFeatured() {
-        const target = document.getElementById('featured-properties');
-        if (!target) return;
-        const props = await loadProperties();
-        const limit = parseInt(target.dataset.limit || '6', 10);
-        const featured = props.slice(0, limit);
-        target.innerHTML = featured.map(propertyCardHTML).join('');
-    }
-
-    async function renderPropertiesList() {
-        const target = document.getElementById('properties-list');
-        if (!target) return;
-        const props = await loadProperties();
-        const urlParams = new URLSearchParams(location.search);
-        const initialCat = urlParams.get('cat') || 'all';
-
-        const render = (cat) => {
-            const filtered = cat === 'all' ? props : props.filter(p => p.category === cat);
-            target.innerHTML = filtered.length
-                ? filtered.map(propertyCardHTML).join('')
-                : '<p style="grid-column: 1/-1; text-align:center; color: var(--gray-500); padding: 4rem 0;">該当する物件はありません。</p>';
-        };
-
-        const btns = document.querySelectorAll('.filter-btn');
-        btns.forEach(b => {
-            if (b.dataset.cat === initialCat) b.classList.add('active');
-            b.addEventListener('click', () => {
-                btns.forEach(x => x.classList.remove('active'));
-                b.classList.add('active');
-                render(b.dataset.cat);
-            });
-        });
-        render(initialCat);
-    }
-
-    async function renderPropertyDetail() {
-        const target = document.getElementById('property-detail');
-        if (!target) return;
-        const id = new URLSearchParams(location.search).get('id');
-        const props = await loadProperties();
-        const p = props.find(x => x.id === id) || props[0];
-        if (!p) {
-            target.innerHTML = '<p>物件が見つかりませんでした。</p>';
-            return;
-        }
-
-        const specs = [
-            ['カテゴリ', p.categoryJP],
-            ['種別', p.subtype],
-            ['所在地', p.location],
-            ['交通', p.access],
-            ['間取り', p.layout || '—'],
-            ['建物面積', p.size ? `${p.size}㎡` : '—'],
-            ['土地面積', p.landSize ? `${p.landSize}㎡` : '—'],
-            ['築年月', p.built || '—'],
-            ['構造', p.structure || '—']
-        ];
-        if (p.yield) specs.push(['表面利回り', `${p.yield}%`]);
-        if (p.occupancy) specs.push(['入居状況', p.occupancy]);
-
-        document.title = `${p.name} | Shonan Minato REAL ESTATE`;
-
-        target.innerHTML = `
-            <div class="detail-hero">
-                <div class="detail-breadcrumb">
-                    <a href="./">TOP</a> ／ <a href="properties.html">物件一覧</a> ／ ${p.name}
-                </div>
-                <div class="detail-title-row">
-                    <div class="detail-category">${p.categoryLabel} — ${p.subtype}</div>
-                    <h1 class="detail-name">${p.name}</h1>
-                    <p class="detail-location">${p.location} ／ ${p.access}</p>
-                </div>
-            </div>
-            <div class="detail-body">
-                <div>
-                    <div class="detail-main-image" style="background-image: url('${p.image}')"></div>
-                    <div class="detail-description">${p.description}</div>
-                    ${p.features ? `<p style="font-size: 0.85rem; color: var(--gray-500);">特徴：${p.features.join(' / ')}</p>` : ''}
-                    <p style="margin-top: 2rem; padding: 1rem; background: var(--ivory); font-size: 0.8rem; color: var(--gray-500);">
-                        ※本物件はサイト開設準備中のサンプル物件です。実際の取引にはご利用いただけません。
-                    </p>
-                </div>
-                <aside class="detail-sidebar">
-                    <div class="detail-price-box">
-                        <div class="detail-price-label">${p.rentType || '価格'}</div>
-                        <div class="detail-price-value">${p.price.toLocaleString()}<span style="font-size: 1rem; color: var(--gray-500);"> ${p.priceUnit}</span></div>
-                        <div class="detail-specs">
-                            ${specs.map(([k, v]) => `
-                                <div class="detail-specs-row">
-                                    <span class="detail-specs-label">${k}</span>
-                                    <span class="detail-specs-value">${v}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div class="detail-contact-cta">
-                        <p>この物件についてのご相談</p>
-                        <a href="contact.html?prop=${p.id}" class="btn btn-primary">お問い合わせ</a>
-                    </div>
-                </aside>
-            </div>
-        `;
-    }
-
-    // ============================================
     // Market data (from scraper results)
     // ============================================
     async function renderMarketStats() {
@@ -446,7 +289,7 @@
             target.innerHTML = `
                 <div class="market-stat">
                     <div class="market-stat-value">${data.length}</div>
-                    <div class="market-stat-label">分析済み物件数</div>
+                    <div class="market-stat-label">本日の新着分析物件</div>
                 </div>
                 <div class="market-stat">
                     <div class="market-stat-value">${avgYield.toFixed(1)}%</div>
@@ -534,9 +377,6 @@
         injectFloatingCTA();
         initHeaderScroll();
         initHeroSlideshow();
-        renderFeatured();
-        renderPropertiesList();
-        renderPropertyDetail();
         renderMarketStats();
         initContactForm();
     });
