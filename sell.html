@@ -24,6 +24,18 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY", "description": "無料査定（机上・訪問）" }
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "査定は本当に無料ですか？", "acceptedAnswer": { "@type": "Answer", "text": "はい、机上査定・訪問査定ともに完全無料です。査定後に売却を強制することも一切ありません。" } },
+        { "@type": "Question", "name": "査定結果はどのくらいで届きますか？", "acceptedAnswer": { "@type": "Answer", "text": "机上査定は最短48時間、通常2〜3営業日以内にご連絡します。訪問査定は日程調整のうえ、訪問後3営業日以内にご提示します。" } },
+        { "@type": "Question", "name": "近所に知られずに売却できますか？", "acceptedAnswer": { "@type": "Answer", "text": "可能です。広告を出さずに購入希望者へ直接ご紹介する非公開売却にも対応しています。守秘義務を徹底しますのでご安心ください。" } },
+        { "@type": "Question", "name": "住宅ローンが残っていても売却できますか？", "acceptedAnswer": { "@type": "Answer", "text": "可能です。売却代金でローンを完済する方法や、残債と売却額のバランスを踏まえた資金計画まで含めてご提案します。" } }
+      ]
+    }
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,6 +75,38 @@
                 <div class="axis-card">
                     <div class="axis-title">データ査定</div>
                     <p class="axis-desc">自社開発 AI システムによる客観的な査定額算出。透明性の高い価格根拠を提示。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: var(--ivory, #f6f3ec); padding: 4rem 0;">
+        <div class="container-narrow">
+            <div class="section-header">
+                <span class="section-label">Flow</span>
+                <h2 class="section-title">売却の流れ</h2>
+                <p class="section-lead">ご相談から引渡しまで、専任の宅建士が一貫してサポートします。</p>
+            </div>
+            <div class="axes-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); max-width: 1000px;">
+                <div class="axis-card">
+                    <div class="axis-title">1. 無料査定</div>
+                    <p class="axis-desc">フォームから最短1分でお申し込み。机上査定は最短48時間でご提示します。</p>
+                </div>
+                <div class="axis-card">
+                    <div class="axis-title">2. 訪問・提案</div>
+                    <p class="axis-desc">現地確認のうえ、販売戦略と手取り額シミュレーションをご提案します。</p>
+                </div>
+                <div class="axis-card">
+                    <div class="axis-title">3. 媒介契約</div>
+                    <p class="axis-desc">ご納得いただけたら媒介契約を締結。非公開売却のご相談も可能です。</p>
+                </div>
+                <div class="axis-card">
+                    <div class="axis-title">4. 販売活動</div>
+                    <p class="axis-desc">レインズ・ポータル掲載と自社顧客への直接紹介で買主を探索します。</p>
+                </div>
+                <div class="axis-card">
+                    <div class="axis-title">5. 契約・引渡し</div>
+                    <p class="axis-desc">契約書類はAI支援で正確・迅速に作成。決済・引渡しまで伴走します。</p>
                 </div>
             </div>
         </div>
@@ -110,17 +154,71 @@
                         <input type="text" name="built" placeholder="例：2005年築">
                     </div>
                     <div class="form-row">
+                        <label>ご希望の査定方法 <span class="required">必須</span></label>
+                        <select name="assessment_type" required>
+                            <option value="">選択してください</option>
+                            <option value="机上査定">机上査定（メールで結果受取・訪問なし）</option>
+                            <option value="訪問査定">訪問査定（現地確認でより正確に）</option>
+                            <option value="相談のみ">まずは相談のみ</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>売却のご予定時期</label>
+                        <select name="timing">
+                            <option value="">選択してください</option>
+                            <option value="すぐにでも">すぐにでも</option>
+                            <option value="3ヶ月以内">3ヶ月以内</option>
+                            <option value="半年以内">半年以内</option>
+                            <option value="1年以内">1年以内</option>
+                            <option value="未定・情報収集">未定・情報収集中</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
                         <label>備考・ご希望</label>
-                        <textarea name="message" placeholder="売却時期のご希望、現在の状況などご自由にお書きください。"></textarea>
+                        <textarea name="message" placeholder="住宅ローン残債の有無、近所に知られたくない等、ご自由にお書きください。"></textarea>
                     </div>
                     <div class="form-submit">
-                        <button type="submit" class="btn btn-navy">査定を依頼する</button>
+                        <button type="submit" class="btn btn-navy">無料査定を依頼する</button>
                     </div>
                     <p class="form-note">
                         ご入力いただいた情報は、査定業務の目的にのみ使用いたします。<br>
-                        通常 2〜3営業日以内に査定結果をご連絡いたします。
+                        机上査定は最短48時間・通常2〜3営業日以内に査定結果をご連絡いたします。
                     </p>
                 </form>
+                <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line, #DDE4EC);">
+                    <p style="font-size: 0.85rem; color: var(--gray-500, #74838F); margin-bottom: 0.8rem;">お電話・LINEでもご相談いただけます（年中無休 10:00〜21:00）</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <a href="tel:0466-96-0313" class="btn btn-outline">TEL 0466-96-0313</a>
+                        <a href="https://lin.ee/SnaIIqa" target="_blank" rel="noopener" class="btn" style="background: #06c755; color: #fff; border: 1px solid #06c755;">LINEで売却相談</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container-narrow">
+            <div class="section-header">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">売却のよくあるご質問</h2>
+            </div>
+            <div style="max-width: 780px; margin: 0 auto;">
+                <div class="axis-card" style="margin-bottom: 1rem;">
+                    <div class="axis-title">査定は本当に無料ですか？</div>
+                    <p class="axis-desc">はい、机上査定・訪問査定ともに完全無料です。査定後に売却を強制することも一切ありません。</p>
+                </div>
+                <div class="axis-card" style="margin-bottom: 1rem;">
+                    <div class="axis-title">査定結果はどのくらいで届きますか？</div>
+                    <p class="axis-desc">机上査定は最短48時間、通常2〜3営業日以内にご連絡します。訪問査定は日程調整のうえ、訪問後3営業日以内にご提示します。</p>
+                </div>
+                <div class="axis-card" style="margin-bottom: 1rem;">
+                    <div class="axis-title">近所に知られずに売却できますか？</div>
+                    <p class="axis-desc">可能です。広告を出さずに購入希望者へ直接ご紹介する非公開売却にも対応しています。守秘義務を徹底しますのでご安心ください。</p>
+                </div>
+                <div class="axis-card" style="margin-bottom: 1rem;">
+                    <div class="axis-title">住宅ローンが残っていても売却できますか？</div>
+                    <p class="axis-desc">可能です。売却代金でローンを完済する方法や、残債と売却額のバランスを踏まえた資金計画まで含めてご提案します。</p>
+                </div>
             </div>
         </div>
     </section>
