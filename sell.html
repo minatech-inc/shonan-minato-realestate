@@ -116,7 +116,7 @@
         <div class="form-container">
             <div class="form-card">
                 <h2 class="section-title" style="text-align: center; margin-bottom: 2rem; font-size: 1.4rem;">査定依頼フォーム</h2>
-                <form action="https://formspree.io/f/xnjlaqdr" method="POST" id="contact-form">
+                <form action="https://formspree.io/f/xnjlaqdr" method="POST" id="sell-form">
                     <input type="hidden" name="_subject" value="【売却査定依頼】Shonan Minato REAL ESTATE">
                     <div class="form-row">
                         <label>お名前 <span class="required">必須</span></label>
@@ -225,5 +225,98 @@
 
     <footer id="site-footer" class="site-footer"></footer>
     <script src="main.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        // 売却査定フォーム送信: GAS台帳（主） → Formspree（フォールバック）
+        // SELL_WEBAPP_URL が空の間は従来どおり Formspree のみで動作する
+        var SELL_WEBAPP_URL = '';
+        var SELL_FORM_TOKEN = 'mt_sell_7c31b9d4e2af';
+
+        var form = document.getElementById('sell-form');
+        if (!form) return;
+        var submitBtn = form.querySelector('button[type="submit"]');
+        var statusEl = document.createElement('div');
+        statusEl.style.cssText = 'margin-top:1rem;padding:14px 18px;border-radius:6px;font-size:0.9rem;display:none;';
+        form.appendChild(statusEl);
+
+        function show(type, msg) {
+            statusEl.style.display = 'block';
+            if (type === 'success') {
+                statusEl.style.cssText += 'background:#ecfdf5;color:#065f46;border:1px solid #10b981;';
+            } else if (type === 'error') {
+                statusEl.style.cssText += 'background:#fef2f2;color:#991b1b;border:1px solid #dc2626;';
+            } else {
+                statusEl.style.cssText += 'background:#eff6ff;color:#1e40af;border:1px solid #3b82f6;';
+            }
+            statusEl.textContent = msg;
+        }
+
+        function collectPayload() {
+            var fd = new FormData(form);
+            return {
+                token: SELL_FORM_TOKEN,
+                form_type: '売却査定',
+                route: 'sell.html',
+                name: fd.get('name') || '',
+                mail: fd.get('email') || '',
+                tel: fd.get('tel') || '',
+                type: fd.get('type') || '',
+                address: fd.get('address') || '',
+                size: fd.get('size') || '',
+                built: fd.get('built') || '',
+                assessment_type: fd.get('assessment_type') || '',
+                timing: fd.get('timing') || '',
+                message: fd.get('message') || ''
+            };
+        }
+
+        async function sendGAS() {
+            var res = await fetch(SELL_WEBAPP_URL, { method: 'POST', body: JSON.stringify(collectPayload()) });
+            var j = {};
+            try { j = await res.json(); } catch (e) { j = { ok: res.ok }; }
+            if (!j || j.ok === false) throw new Error(j.error || 'gas error');
+            return j.no || '';
+        }
+
+        async function sendFormspree() {
+            var res = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) throw new Error('formspree error');
+        }
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            var orig = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送信中…';
+            show('info', '送信中です。しばらくお待ちください…');
+            try {
+                var receiptNo = '';
+                if (SELL_WEBAPP_URL) {
+                    try {
+                        receiptNo = await sendGAS();
+                    } catch (gasErr) {
+                        await sendFormspree();  // GAS障害時のフォールバック
+                    }
+                } else {
+                    await sendFormspree();
+                }
+                show('success', '査定のご依頼を受け付けました。' +
+                    (receiptNo ? '受付番号：' + receiptNo + '。' : '') +
+                    '机上査定は最短48時間・通常2〜3営業日以内にご連絡いたします。');
+                form.reset();
+            } catch (err) {
+                show('error', '送信に失敗しました。お手数ですがお電話（0466-96-0313）またはLINEでご連絡ください。');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = orig;
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

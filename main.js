@@ -40,6 +40,7 @@
                     <a href="properties.html">Properties</a>
                     <a href="area/fujisawa.html">Area</a>
                     <a href="market.html">Market</a>
+                    <a href="loan.html">Loan</a>
                     <a href="blog.html">Column</a>
                     <a href="faq.html">FAQ</a>
                     <a href="about.html">About</a>
@@ -132,6 +133,7 @@
                     <div>
                         <div class="footer-title">Information</div>
                         <ul class="footer-nav">
+                            <li><a href="loan.html">住宅ローンシミュレーター</a></li>
                             <li><a href="blog.html">コラム</a></li>
                             <li><a href="faq.html">よくあるご質問</a></li>
                             <li><a href="area/fujisawa.html">藤沢市の不動産</a></li>

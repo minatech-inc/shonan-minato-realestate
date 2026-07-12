@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>住宅ローンシミュレーター｜毎月の返済額を最新金利で試算 | Shonan Minato REAL ESTATE</title>
+    <meta name="description" content="住宅ローンの毎月返済額・総返済額を最新金利で無料シミュレーション。フラット35の公表金利を自動反映。元利均等・元金均等の比較、年収からの借入可能額試算にも対応。湘南・藤沢・茅ヶ崎・鎌倉の物件探しはShonan Minatoへ。">
+    <meta name="keywords" content="住宅ローン シミュレーション,住宅ローン 計算,月々 返済額,借入可能額,フラット35 金利,藤沢 不動産">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://realestate.minatech1210.com/loan.html">
+    <meta property="og:title" content="住宅ローンシミュレーター｜毎月の返済額を最新金利で試算">
+    <meta property="og:description" content="フラット35の公表金利を自動反映した住宅ローン試算ツール。毎月返済額・総利息・借入可能額を無料で計算できます。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://realestate.minatech1210.com/loan.html">
+    <meta property="og:image" content="https://realestate.minatech1210.com/ogp.png">
+    <meta property="og:locale" content="ja_JP">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "住宅ローンシミュレーター",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+      "provider": { "@type": "RealEstateAgent", "name": "Shonan Minato REAL ESTATE", "url": "https://realestate.minatech1210.com/" }
+    }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="analytics.js" defer></script>
+    <style>
+        .loan-grid { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; align-items: start; }
+        @media (max-width: 860px) { .loan-grid { grid-template-columns: 1fr; } }
+        .loan-panel { background: var(--white, #fff); border: 1px solid var(--ivory-dark, #ebe7dc); border-radius: 8px; padding: 1.8rem; }
+        .loan-panel h3 { font-family: var(--font-serif); font-size: 1.05rem; color: var(--navy, #0a2540); margin: 0 0 1.2rem; }
+        .loan-field { margin-bottom: 1.1rem; }
+        .loan-field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy, #0a2540); margin-bottom: 0.35rem; }
+        .loan-field .unit-input { display: flex; align-items: center; gap: 8px; }
+        .loan-field input[type="number"] { width: 100%; padding: 0.6rem 0.7rem; border: 1px solid #d1d8e2; border-radius: 6px; font-size: 1rem; font-family: inherit; }
+        .loan-field input:focus { outline: none; border-color: var(--gold, #c9a96e); }
+        .loan-field .unit { font-size: 0.8rem; color: var(--gray-500, #74838F); white-space: nowrap; }
+        .rate-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .rate-preset { font-size: 0.72rem; padding: 5px 10px; border: 1px solid #d1d8e2; background: #fff; border-radius: 999px; cursor: pointer; font-family: inherit; color: var(--gray-700, #333); transition: all 0.15s; }
+        .rate-preset:hover { border-color: var(--gold, #c9a96e); }
+        .rate-preset.active { background: var(--navy, #0a2540); color: #fff; border-color: var(--navy, #0a2540); }
+        .method-toggle { display: flex; gap: 0; border: 1px solid #d1d8e2; border-radius: 6px; overflow: hidden; }
+        .method-toggle button { flex: 1; padding: 0.55rem; border: none; background: #fff; font-family: inherit; font-size: 0.82rem; cursor: pointer; color: var(--gray-700, #333); }
+        .method-toggle button.active { background: var(--navy, #0a2540); color: #fff; }
+        .rate-note { font-size: 0.72rem; color: var(--gray-500, #74838F); line-height: 1.7; margin-top: 0.4rem; }
+        .rate-note strong { color: var(--gold-dark, #a8895a); }
+
+        .result-hero { text-align: center; padding: 1.6rem 1rem 1.4rem; background: var(--ivory, #f6f3ec); border-radius: 8px; margin-bottom: 1.4rem; }
+        .result-hero .label { font-size: 0.78rem; color: var(--gray-500, #74838F); letter-spacing: 0.1em; }
+        .result-hero .value { font-family: var(--font-serif); font-size: 2.6rem; color: var(--navy, #0a2540); line-height: 1.3; }
+        .result-hero .value small { font-size: 1rem; color: var(--gray-500, #74838F); }
+        .result-hero .sub { font-size: 0.75rem; color: var(--gray-500, #74838F); }
+        .result-rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 1.4rem; }
+        .result-cell { background: #fff; border: 1px solid var(--ivory-dark, #ebe7dc); border-radius: 8px; padding: 0.9rem 1rem; }
+        .result-cell .k { font-size: 0.7rem; color: var(--gray-500, #74838F); }
+        .result-cell .v { font-family: var(--font-serif); font-size: 1.15rem; color: var(--navy, #0a2540); margin-top: 2px; }
+        .chart-wrap { background: #fff; border: 1px solid var(--ivory-dark, #ebe7dc); border-radius: 8px; padding: 1rem 1.2rem 0.6rem; }
+        .chart-wrap .chart-title { font-size: 0.75rem; color: var(--gray-500, #74838F); margin-bottom: 4px; }
+        #balance-chart { width: 100%; height: auto; display: block; }
+
+        .capacity-box { margin-top: 1.4rem; background: #fff; border: 1px solid var(--ivory-dark, #ebe7dc); border-left: 3px solid var(--gold, #c9a96e); border-radius: 8px; padding: 1.2rem 1.4rem; }
+        .capacity-box .cap-title { font-size: 0.85rem; font-weight: 600; color: var(--navy, #0a2540); margin-bottom: 0.7rem; }
+        .capacity-inline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.85rem; }
+        .capacity-inline input { width: 110px; padding: 0.45rem 0.6rem; border: 1px solid #d1d8e2; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+        .capacity-result { font-family: var(--font-serif); font-size: 1.3rem; color: var(--navy, #0a2540); }
+        .loan-disclaimer { font-size: 0.72rem; color: var(--gray-500, #74838F); line-height: 1.8; margin-top: 1.6rem; padding: 1rem 1.2rem; background: var(--ivory, #f6f3ec); border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <header id="site-header" class="site-header"></header>
+
+    <div class="page-header">
+        <div class="container">
+            <span class="section-label">Loan Simulator</span>
+            <h1>住宅ローンシミュレーター</h1>
+        </div>
+    </div>
+
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <p class="section-lead" style="max-width: 640px; margin: 0 auto;">
+                    毎月の返済額・総返済額を、<strong>最新の公表金利</strong>で試算できます。<br>
+                    金利は住宅金融支援機構【フラット35】の公表値を毎日自動取得しています。
+                </p>
+            </div>
+
+            <div class="loan-grid">
+                <!-- 入力パネル -->
+                <div class="loan-panel">
+                    <h3>借入条件を入力</h3>
+                    <div class="loan-field">
+                        <label for="in-price">物件価格</label>
+                        <div class="unit-input">
+                            <input type="number" id="in-price" value="4500" min="0" step="100">
+                            <span class="unit">万円</span>
+                        </div>
+                    </div>
+                    <div class="loan-field">
+                        <label for="in-down">頭金（自己資金）</label>
+                        <div class="unit-input">
+                            <input type="number" id="in-down" value="500" min="0" step="100">
+                            <span class="unit">万円</span>
+                        </div>
+                    </div>
+                    <div class="loan-field">
+                        <label for="in-principal">借入額（自動計算・調整可）</label>
+                        <div class="unit-input">
+                            <input type="number" id="in-principal" value="4000" min="1" step="100">
+                            <span class="unit">万円</span>
+                        </div>
+                    </div>
+                    <div class="loan-field">
+                        <label for="in-years">返済期間</label>
+                        <div class="unit-input">
+                            <input type="number" id="in-years" value="35" min="1" max="50" step="1">
+                            <span class="unit">年</span>
+                        </div>
+                    </div>
+                    <div class="loan-field">
+                        <label for="in-rate">金利（年率）</label>
+                        <div class="rate-presets" id="rate-presets">
+                            <button type="button" class="rate-preset active" data-kind="flat35">フラット35（読込中…）</button>
+                            <button type="button" class="rate-preset" data-kind="flat20">フラット20（読込中…）</button>
+                            <button type="button" class="rate-preset" data-kind="manual">変動・その他（手動入力）</button>
+                        </div>
+                        <div class="unit-input">
+                            <input type="number" id="in-rate" value="3.14" min="0" max="20" step="0.01">
+                            <span class="unit">%</span>
+                        </div>
+                        <p class="rate-note" id="rate-note">金利情報を読み込んでいます…</p>
+                    </div>
+                    <div class="loan-field">
+                        <label>返済方式</label>
+                        <div class="method-toggle" id="method-toggle">
+                            <button type="button" class="active" data-method="annuity">元利均等返済</button>
+                            <button type="button" data-method="principal">元金均等返済</button>
+                        </div>
+                        <p class="rate-note" id="method-note">毎月の返済額が一定。一般的な返済方式です。</p>
+                    </div>
+                </div>
+
+                <!-- 結果パネル -->
+                <div>
+                    <div class="result-hero">
+                        <div class="label">毎月の返済額</div>
+                        <div class="value" id="out-monthly">—</div>
+                        <div class="sub" id="out-monthly-sub"></div>
+                    </div>
+                    <div class="result-rows">
+                        <div class="result-cell"><div class="k">借入額</div><div class="v" id="out-principal">—</div></div>
+                        <div class="result-cell"><div class="k">総返済額</div><div class="v" id="out-total">—</div></div>
+                        <div class="result-cell"><div class="k">うち利息総額</div><div class="v" id="out-interest">—</div></div>
+                        <div class="result-cell"><div class="k">年間返済額（初年度）</div><div class="v" id="out-annual">—</div></div>
+                    </div>
+                    <div class="chart-wrap">
+                        <div class="chart-title">ローン残高の推移（年末残高）</div>
+                        <svg id="balance-chart" viewBox="0 0 640 220" role="img" aria-label="ローン残高推移グラフ"></svg>
+                    </div>
+
+                    <div class="capacity-box">
+                        <div class="cap-title">毎月の返済額から借入可能額を逆算</div>
+                        <div class="capacity-inline">
+                            <span>毎月</span>
+                            <input type="number" id="cap-monthly" value="12" min="1" step="0.5">
+                            <span>万円の返済なら、上記の金利・期間で</span>
+                            <span class="capacity-result" id="cap-result">—</span>
+                            <span>まで借入可能</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loan-disclaimer" id="loan-disclaimer">
+                ※ 本シミュレーションは概算です。実際の借入条件・審査結果を保証するものではありません。
+                団体信用生命保険・保証料・事務手数料等の諸費用は含まれていません。
+                変動金利は金融機関・優遇条件により大きく異なります。詳細は各金融機関または当店までご相談ください。
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-banner">
+        <div class="container cta-banner-inner">
+            <h2 class="cta-title">資金計画から物件探しまで、まとめてご相談</h2>
+            <p class="cta-sub">「この返済額ならどんな物件が買える？」にお答えします。住宅ローンの事前審査サポートも無料です。</p>
+            <div class="cta-buttons">
+                <a href="baibai.html" class="btn btn-primary">購入・資金計画の相談</a>
+                <a href="https://lin.ee/SnaIIqa" target="_blank" rel="noopener" class="btn btn-outline">LINEで相談する</a>
+            </div>
+        </div>
+    </section>
+
+    <footer id="site-footer" class="site-footer"></footer>
+    <script src="main.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var rates = null;
+        var currentPreset = 'flat35';
+        var method = 'annuity';
+
+        var $ = function (id) { return document.getElementById(id); };
+
+        function manYen(v) { return Math.round(v).toLocaleString('ja-JP'); }
+
+        // ===== 計算 =====
+        function monthlyAnnuity(P, annualRate, months) {
+            var r = annualRate / 100 / 12;
+            if (r === 0) return P / months;
+            var f = Math.pow(1 + r, months);
+            return P * r * f / (f - 1);
+        }
+        function capacityFromMonthly(M, annualRate, months) {
+            var r = annualRate / 100 / 12;
+            if (r === 0) return M * months;
+            var f = Math.pow(1 + r, months);
+            return M * (f - 1) / (r * f);
+        }
+
+        function calc() {
+            var principalMan = parseFloat($('in-principal').value) || 0;
+            var years = Math.min(50, Math.max(1, parseInt($('in-years').value, 10) || 35));
+            var rate = parseFloat($('in-rate').value) || 0;
+            var P = principalMan * 10000;
+            var n = years * 12;
+            var r = rate / 100 / 12;
+
+            var firstMonthly, totalPay;
+            var balances = [P];
+
+            if (method === 'annuity') {
+                firstMonthly = monthlyAnnuity(P, rate, n);
+                totalPay = firstMonthly * n;
+                var bal = P;
+                for (var m = 1; m <= n; m++) {
+                    bal = bal * (1 + r) - firstMonthly;
+                    if (m % 12 === 0) balances.push(Math.max(0, bal));
+                }
+                $('out-monthly-sub').textContent = '毎月一定（元利均等）';
+                $('out-annual').textContent = manYen(firstMonthly * 12 / 10000) + '万円';
+            } else {
+                var principalPart = P / n;
+                firstMonthly = principalPart + P * r;
+                totalPay = P + P * r * (n + 1) / 2;
+                var balp = P;
+                var firstYearSum = 0;
+                for (var m2 = 1; m2 <= n; m2++) {
+                    if (m2 <= 12) firstYearSum += principalPart + balp * r;
+                    balp -= principalPart;
+                    if (m2 % 12 === 0) balances.push(Math.max(0, balp));
+                }
+                var lastMonthly = principalPart * (1 + r);
+                $('out-monthly-sub').textContent = '初回。返済が進むと減少（最終回 約' +
+                    (lastMonthly / 10000).toFixed(1) + '万円）';
+                $('out-annual').textContent = manYen(firstYearSum / 10000) + '万円';
+            }
+
+            $('out-monthly').innerHTML =
+                '<span>' + Number((firstMonthly / 10000).toFixed(1)).toLocaleString('ja-JP') + '</span><small> 万円</small>';
+            $('out-principal').textContent = manYen(principalMan) + '万円';
+            $('out-total').textContent = manYen(totalPay / 10000) + '万円';
+            $('out-interest').textContent = manYen((totalPay - P) / 10000) + '万円';
+
+            drawChart(balances, years);
+            calcCapacity();
+        }
+
+        function calcCapacity() {
+            var mMan = parseFloat($('cap-monthly').value) || 0;
+            var years = Math.min(50, Math.max(1, parseInt($('in-years').value, 10) || 35));
+            var rate = parseFloat($('in-rate').value) || 0;
+            var cap = capacityFromMonthly(mMan * 10000, rate, years * 12);
+            $('cap-result').textContent = '約' + manYen(cap / 10000) + '万円';
+        }
+
+        // ===== グラフ（SVG手描き・外部ライブラリなし） =====
+        function drawChart(balances, years) {
+            var svg = $('balance-chart');
+            var W = 640, H = 220, padL = 56, padR = 16, padT = 14, padB = 28;
+            var maxV = balances[0] || 1;
+            var innerW = W - padL - padR, innerH = H - padT - padB;
+            function x(i) { return padL + innerW * i / Math.max(1, balances.length - 1); }
+            function y(v) { return padT + innerH * (1 - v / maxV); }
+
+            var grid = '';
+            for (var g = 0; g <= 4; g++) {
+                var gy = padT + innerH * g / 4;
+                var val = maxV * (1 - g / 4);
+                grid += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy +
+                    '" stroke="#ebe7dc" stroke-width="1"/>' +
+                    '<text x="' + (padL - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="10" fill="#74838F">' +
+                    Math.round(val / 10000).toLocaleString('ja-JP') + '万</text>';
+            }
+            var pts = balances.map(function (v, i) { return x(i) + ',' + y(v); }).join(' ');
+            var area = padL + ',' + (H - padB) + ' ' + pts + ' ' + (W - padR) + ',' + (H - padB);
+            var xLabels = '';
+            var step = Math.max(1, Math.ceil(years / 7));
+            for (var yr = 0; yr <= years; yr += step) {
+                xLabels += '<text x="' + x(yr) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="#74838F">' + yr + '年</text>';
+            }
+            svg.innerHTML = grid +
+                '<polygon points="' + area + '" fill="rgba(201,169,110,0.14)"/>' +
+                '<polyline points="' + pts + '" fill="none" stroke="#0a2540" stroke-width="2"/>' +
+                xLabels;
+        }
+
+        // ===== 金利プリセット =====
+        function setPreset(kind) {
+            currentPreset = kind;
+            var btns = document.querySelectorAll('.rate-preset');
+            btns.forEach(function (b) { b.classList.toggle('active', b.dataset.kind === kind); });
+            if (!rates) return;
+            if (kind === 'flat35' && rates.flat35_21_35) {
+                $('in-rate').value = rates.flat35_21_35.mode;
+            } else if (kind === 'flat20' && rates.flat35_15_20) {
+                $('in-rate').value = rates.flat35_15_20.mode;
+                if (parseInt($('in-years').value, 10) > 20) $('in-years').value = 20;
+            } else if (kind === 'manual') {
+                $('in-rate').focus();
+                $('in-rate').select();
+            }
+            calc();
+        }
+
+        function loadRates() {
+            fetch('data/loan_rates.json', { cache: 'no-store' })
+                .then(function (res) { return res.json(); })
+                .then(function (json) {
+                    rates = json;
+                    var btn35 = document.querySelector('[data-kind="flat35"]');
+                    var btn20 = document.querySelector('[data-kind="flat20"]');
+                    if (json.flat35_21_35) btn35.textContent = 'フラット35 ' + json.flat35_21_35.mode.toFixed(2) + '%（21〜35年）';
+                    if (json.flat35_15_20) btn20.textContent = 'フラット20 ' + json.flat35_15_20.mode.toFixed(2) + '%（〜20年）';
+                    var note = '金利出典: ' + (json.source || '') + (json.published ? '（' + json.published + '公表' + '）' : '') +
+                        '　最終更新: ' + (json.updated_at || '');
+                    if (json.boj_short_prime) {
+                        note += '<br>変動金利の参考: 短期プライムレート <strong>' + json.boj_short_prime.toFixed(3) +
+                            '%</strong>（日銀公表・主要行最頻値）。実際の変動金利は各行の優遇条件で大きく異なります。';
+                    }
+                    $('rate-note').innerHTML = note;
+                    if (json.flat35_21_35) { $('in-rate').value = json.flat35_21_35.mode; }
+                    calc();
+                })
+                .catch(function () {
+                    $('rate-note').textContent = '金利情報の自動取得に失敗しました。金利を手動で入力してください。';
+                });
+        }
+
+        // ===== イベント =====
+        function syncPrincipal() {
+            var price = parseFloat($('in-price').value) || 0;
+            var down = parseFloat($('in-down').value) || 0;
+            $('in-principal').value = Math.max(0, price - down);
+        }
+        $('in-price').addEventListener('input', function () { syncPrincipal(); calc(); });
+        $('in-down').addEventListener('input', function () { syncPrincipal(); calc(); });
+        ['in-principal', 'in-years', 'in-rate'].forEach(function (id) {
+            $(id).addEventListener('input', function () {
+                if (id === 'in-rate') setManualIfEdited();
+                calc();
+            });
+        });
+        $('cap-monthly').addEventListener('input', calcCapacity);
+        function setManualIfEdited() {
+            // 手動で金利を書き換えたらプリセット表示を「手動」へ
+            if (!rates) return;
+            var v = parseFloat($('in-rate').value);
+            var isF35 = rates.flat35_21_35 && v === rates.flat35_21_35.mode;
+            var isF20 = rates.flat35_15_20 && v === rates.flat35_15_20.mode;
+            if (!isF35 && !isF20) {
+                document.querySelectorAll('.rate-preset').forEach(function (b) {
+                    b.classList.toggle('active', b.dataset.kind === 'manual');
+                });
+            }
+        }
+        document.querySelectorAll('.rate-preset').forEach(function (b) {
+            b.addEventListener('click', function () { setPreset(b.dataset.kind); });
+        });
+        document.querySelectorAll('#method-toggle button').forEach(function (b) {
+            b.addEventListener('click', function () {
+                method = b.dataset.method;
+                document.querySelectorAll('#method-toggle button').forEach(function (x) {
+                    x.classList.toggle('active', x === b);
+                });
+                $('method-note').textContent = method === 'annuity'
+                    ? '毎月の返済額が一定。一般的な返済方式です。'
+                    : '毎月の元金が一定。初回の返済額は多めですが総利息を抑えられます。';
+                calc();
+            });
+        });
+
+        calc();
+        loadRates();
+    })();
+    </script>
+</body>
+</html>
