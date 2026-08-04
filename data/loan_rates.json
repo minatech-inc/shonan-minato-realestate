@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-08-03",
+  "updated_at": "2026-08-04",
   "source": "住宅金融支援機構【フラット35】公表金利（融資率9割以下・新機構団信付き）",
   "source_url": "https://www.flat35.com/kinri/index.html",
   "flat35_21_35": {
-    "min": 3.14,
-    "max": 5.4,
-    "mode": 3.14
+    "min": 3.29,
+    "max": 5.57,
+    "mode": 3.29
   },
   "flat35_15_20": {
-    "min": 2.82,
-    "max": 5.08,
-    "mode": 2.82
+    "min": 2.97,
+    "max": 5.25,
+    "mode": 2.97
   },
-  "published": "2026年7月",
+  "published": "2026年8月",
   "boj_short_prime": 2.125,
   "boj_short_prime_note": "日銀公表・主要行の短期プライムレート最頻値。変動金利の店頭基準金利はこれに約+1%が一般的"
 }
