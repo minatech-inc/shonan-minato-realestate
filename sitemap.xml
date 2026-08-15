@@ -4,25 +4,25 @@
     <loc>https://realestate.minatech1210.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-07-31</lastmod>
   </url>
   <url>
     <loc>https://realestate.minatech1210.com/properties.html</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-07-03</lastmod>
   </url>
   <url>
     <loc>https://realestate.minatech1210.com/sell.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-07-12</lastmod>
   </url>
   <url>
     <loc>https://realestate.minatech1210.com/contact.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-07-30</lastmod>
   </url>
   <url>
     <loc>https://realestate.minatech1210.com/oheya.html</loc>
@@ -40,7 +40,7 @@
     <loc>https://realestate.minatech1210.com/recruit.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-07-03</lastmod>
   </url>
   <url>
     <loc>https://realestate.minatech1210.com/market.html</loc>
@@ -145,6 +145,7 @@
     <loc>https://realestate.minatech1210.com/loan.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+      <lastmod>2026-07-12</lastmod>
   </url>
   <url>
     <loc>https://realestate.minatech1210.com/blog/shonan-building-cost-2026.html</loc>
