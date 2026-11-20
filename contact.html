@@ -47,6 +47,22 @@
                 <form action="https://formspree.io/f/xnjlaqdr" method="POST" id="inquiry-form">
                     <input type="hidden" name="_subject" value="【サイト問い合わせ】Shonan Minato REAL ESTATE">
                     <div class="form-row">
+                        <label>お客様のお立場 <span class="required">必須</span></label>
+                        <div id="visitor-type" style="display:flex;flex-wrap:wrap;gap:8px 20px;font-size:0.92rem;">
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="radio" name="visitor_type" value="individual" required> 個人のお客様</label>
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="radio" name="visitor_type" value="corporate"> 法人のお客様（物件・テナントのご相談）</label>
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="radio" name="visitor_type" value="vendor"> 業者・営業のご連絡</label>
+                        </div>
+                        <div id="vendor-notice" style="display:none;margin-top:12px;padding:14px 18px;border-radius:6px;background:#fef2f2;color:#991b1b;border:1px solid #dc2626;font-size:0.88rem;line-height:1.8;">
+                            営業・セールス・サービス提案を目的としたご連絡は、本フォームおよびお電話では受け付けておりません。<br>
+                            ご提案資料は郵送（〒251-0055 神奈川県藤沢市南藤沢3-12 クリオ藤沢駅前7階 MinaTech株式会社 宛）にてお送りください。必要と判断した場合のみ当社よりご連絡いたします。
+                        </div>
+                    </div>
+                    <!-- ハニーポット: 人間には見えない。ボットが埋めたら送信を黙って破棄 -->
+                    <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                        <label>Website <input type="text" name="company_url" tabindex="-1" autocomplete="off"></label>
+                    </div>
+                    <div class="form-row">
                         <label>お名前 <span class="required">必須</span></label>
                         <input type="text" name="name" required>
                     </div>
@@ -74,6 +90,9 @@
                         <label>ご相談内容 <span class="required">必須</span></label>
                         <textarea name="message" required placeholder="ご希望物件のイメージ、予算、エリア、投資目的等、お気軽にご記入ください。"></textarea>
                     </div>
+                    <p class="form-note" style="font-size:0.82rem;color:#6b7280;margin-bottom:12px;">
+                        ※営業・セールス目的のご連絡はご遠慮ください。該当する送信は自動的に「対応不要」に分類され、返信はいたしません。
+                    </p>
                     <div class="form-submit">
                         <button type="submit" class="btn btn-navy">送信する</button>
                     </div>
@@ -124,7 +143,8 @@
                 mail: fd.get('email') || '',
                 tel: fd.get('tel') || '',
                 category: CATEGORY_LABELS[fd.get('category')] || fd.get('category') || 'その他',
-                message: fd.get('message') || ''
+                message: fd.get('message') || '',
+                visitor_type: fd.get('visitor_type') || ''
             };
             var res = await fetch(WEBAPP_URL, { method: 'POST', body: JSON.stringify(payload) });
             var j = {};
@@ -141,8 +161,27 @@
             if (!res.ok) throw new Error('formspree error');
         }
 
+        var vendorNotice = document.getElementById('vendor-notice');
+        var radios = form.querySelectorAll('input[name="visitor_type"]');
+        function applyVisitorType() {
+            var v = (form.querySelector('input[name="visitor_type"]:checked') || {}).value;
+            var isVendor = v === 'vendor';
+            vendorNotice.style.display = isVendor ? 'block' : 'none';
+            submitBtn.disabled = isVendor;
+            submitBtn.textContent = isVendor ? '営業目的のご連絡は受け付けておりません' : '送信する';
+        }
+        radios.forEach(function (r) { r.addEventListener('change', applyVisitorType); });
+
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
+            var vt = (form.querySelector('input[name="visitor_type"]:checked') || {}).value;
+            if (vt === 'vendor') { applyVisitorType(); return; }
+            if ((form.querySelector('input[name="company_url"]') || {}).value) {
+                // ボット判定: 送信したふりをして破棄
+                show('success', 'お問い合わせを受け付けました。');
+                form.reset();
+                return;
+            }
             var orig = submitBtn.textContent;
             submitBtn.disabled = true;
             submitBtn.textContent = '送信中…';
